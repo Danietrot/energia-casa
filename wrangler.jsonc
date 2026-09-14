@@ -1,0 +1,11 @@
+{
+  "name": "energia-casa",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-14",
+  "keep_vars": true,
+  "kv_namespaces": [
+    {
+      "binding": "ENERGY_KV"
+    }
+  ]
+}
