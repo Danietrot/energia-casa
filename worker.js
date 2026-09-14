@@ -20,16 +20,6 @@ function text(body, contentType = "text/plain; charset=utf-8", status = 200) {
   });
 }
 
-function unauthorized() {
-  return json({ error: "Non autorizzato" }, 401);
-}
-
-function isAuthorized(request, env) {
-  if (!env.ACCESS_TOKEN) return false;
-  const h = request.headers.get("authorization") || "";
-  return h === "Bearer " + env.ACCESS_TOKEN;
-}
-
 function tsFormat(date) {
   return date.toISOString().slice(0, 19).replace("T", " ");
 }
@@ -386,16 +376,6 @@ footer{color:var(--muted);font-size:.75rem;text-align:center;padding:22px 0}
 <footer>Dati Shelly Pro EM-50 → ThingSpeak • Fuso Europe/Rome</footer>
 </div>
 
-<div class="modal" id="loginModal">
-  <div class="modalbox loginbox">
-    <div class="modalhead"><h2>Accesso dashboard</h2></div>
-    <p>Inserisci il codice di accesso che imposterai nel Worker Cloudflare. Il codice resta salvato solo su questo dispositivo.</p>
-    <input id="tokenInput" type="password" autocomplete="current-password" placeholder="Codice accesso">
-    <button class="btn primary" id="loginBtn" style="width:100%">Accedi</button>
-    <div class="notice" id="loginError"></div>
-  </div>
-</div>
-
 <div class="modal" id="settingsModal">
   <div class="modalbox">
     <div class="modalhead"><h2>Tariffe energia</h2><button class="x" id="closeSettings">×</button></div>
@@ -406,8 +386,7 @@ footer{color:var(--muted);font-size:.75rem;text-align:center;padding:22px 0}
       <button class="btn primary" id="saveRate">Salva</button>
     </div>
     <div id="tariffList"></div>
-    <div style="display:flex;justify-content:space-between;gap:8px;margin-top:14px">
-      <button class="btn danger" id="logoutBtn">Disconnetti dispositivo</button>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
       <button class="btn" id="closeSettings2">Chiudi</button>
     </div>
   </div>
@@ -415,7 +394,7 @@ footer{color:var(--muted);font-size:.75rem;text-align:center;padding:22px 0}
 
 <script>
 const TZ='Europe/Rome';
-const state={token:localStorage.getItem('energy_access_token')||'',tariffs:{},tab:'day',live:null,day:null,month:null,year:null};
+const state={tariffs:{},tab:'day',live:null,day:null,month:null,year:null};
 
 const $=s=>document.querySelector(s);
 const fmt=(n,d=2)=>Number.isFinite(n)?n.toLocaleString('it-IT',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
@@ -430,16 +409,12 @@ function nextMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,1,0,0,0,0)}
 function nextYear(d){return new Date(d.getFullYear()+1,0,1,0,0,0,0)}
 
 async function api(path,opts={}){
-  const h=Object.assign({},opts.headers||{},state.token?{'Authorization':'Bearer '+state.token}:{});
-  const r=await fetch(path,Object.assign({},opts,{headers:h}));
-  if(r.status===401){showLogin();throw new Error('Non autorizzato')}
+  const r=await fetch(path,opts);
   const data=await r.json().catch(()=>({error:'Risposta non valida'}));
   if(!r.ok) throw new Error(data.error||('HTTP '+r.status));
   return data;
 }
 
-function showLogin(){$('#loginModal').classList.add('show')}
-function hideLogin(){$('#loginModal').classList.remove('show')}
 function setStatus(txt,ok=true){$('#status').textContent=txt;document.querySelector('.statusdot').style.background=ok?'var(--accent2)':'var(--danger)'}
 
 async function loadTariffs(){state.tariffs=await api('/api/tariffs');renderTariffs()}
@@ -551,17 +526,13 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=async()=>{document.queryS
 $('#refreshBtn').onclick=refreshAll;
 $('#settingsBtn').onclick=()=>{$('#settingsModal').classList.add('show');renderTariffs()};
 $('#closeSettings').onclick=$('#closeSettings2').onclick=()=>$('#settingsModal').classList.remove('show');
-$('#logoutBtn').onclick=()=>{localStorage.removeItem('energy_access_token');state.token='';$('#settingsModal').classList.remove('show');showLogin()};
 $('#saveRate').onclick=async()=>{const month=$('#newMonth').value,raw=$('#newRate').value.replace(',','.');const rate=Number(raw);if(!month||!Number.isFinite(rate)){alert('Inserisci mese e tariffa.');return}await api('/api/tariffs',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({month,rate})});$('#newRate').value='';await loadTariffs();await refreshAll()};
-$('#loginBtn').onclick=async()=>{const token=$('#tokenInput').value.trim();if(!token)return;state.token=token;try{await api('/api/tariffs');localStorage.setItem('energy_access_token',token);$('#loginError').textContent='';hideLogin();await loadTariffs();await refreshAll()}catch(e){state.token='';$('#loginError').textContent='Codice non valido.'}};
-$('#tokenInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('#loginBtn').click()});
 $('#newMonth').value=monthKeyFromDate(new Date());
 
 (async()=>{
   if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
-  if(!state.token){showLogin();return}
   try{await loadTariffs();await refreshAll()}catch(e){setStatus(e.message,false)}
-  setInterval(()=>{if(state.token)loadLive().catch(()=>{})},60000);
+  setInterval(()=>{loadLive().catch(()=>{})},60000);
 })();
 </script>
 </body>
@@ -573,7 +544,6 @@ export default {
       const url = new URL(request.url);
 
       if (url.pathname.startsWith("/api/")) {
-        if (!isAuthorized(request, env)) return unauthorized();
         if (!env.ENERGY_KV) return json({ error: "Binding ENERGY_KV non configurato." }, 500);
 
         if (url.pathname === "/api/live" && request.method === "GET") return await apiLive(env);
