@@ -1,0 +1,16 @@
+CHECKLIST RAPIDA
+
+1) Cloudflare -> Workers & Pages -> Create Worker
+2) Incolla worker.js e Deploy
+3) Crea KV namespace: ENERGY_KV
+4) Worker -> Settings -> Bindings -> KV binding
+   Nome binding: ENERGY_KV
+5) Worker -> Settings -> Variables and Secrets:
+   THINGSPEAK_READ_API_KEY = (Read API Key nuova) [SECRET]
+   ACCESS_TOKEN = (un tuo codice lungo) [SECRET]
+   THINGSPEAK_CHANNEL_ID = 3493335
+   TIME_ZONE = Europe/Rome
+6) Deploy
+7) Apri URL workers.dev
+8) Inserisci ACCESS_TOKEN
+9) Tariffe -> imposta 2026-09 -> €/kWh
