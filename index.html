@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<title>Energia Casa</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<style>
+:root{--bg:#0b0f14;--panel:#111821;--panel2:#161f2a;--text:#f5f7fa;--muted:#8f9baa;--accent:#4cc9f0;--accent2:#7be495;--danger:#ff6b6b;--border:#24303d;--shadow:0 12px 30px rgba(0,0,0,.28)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input{font:inherit}.wrap{max-width:1180px;margin:auto;padding:18px}header{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:18px}
+.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:14px;background:var(--panel2);display:grid;place-items:center;border:1px solid var(--border)}
+.brand h1{font-size:1.25rem;margin:0}.sub{color:var(--muted);font-size:.86rem;margin-top:2px}.statusdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent2);margin-right:6px}
+.actions{display:flex;gap:8px}.btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 12px;border-radius:12px;cursor:pointer}.btn.primary{background:var(--accent);color:#041017;border-color:transparent;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:linear-gradient(180deg,var(--panel),#0f151d);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.klabel{color:var(--muted);font-size:.82rem}.kvalue{font-size:1.8rem;font-weight:800;letter-spacing:-.03em;margin-top:7px}.ksub{color:var(--muted);font-size:.78rem;margin-top:5px}
+.tabs{display:flex;gap:8px;margin:16px 0 12px}.tab{padding:9px 13px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer}.tab.active{background:var(--panel2);color:var(--text);border-color:#344253}
+.section{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:12px}.chartcard{min-height:390px}.charthead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.charttitle{font-weight:750}.chartmeta{font-size:.8rem;color:var(--muted);margin-top:3px}.chart{width:100%;height:295px;display:block}.pill{font-size:.78rem;background:#0d131b;border:1px solid var(--border);padding:7px 9px;border-radius:10px}
+.tablewrap{max-height:330px;overflow:auto;border-radius:12px;border:1px solid var(--border)}table{width:100%;border-collapse:collapse;font-size:.86rem}th,td{padding:10px 11px;border-bottom:1px solid var(--border);text-align:right}th:first-child,td:first-child{text-align:left}th{position:sticky;top:0;background:var(--panel2);color:var(--muted)}
+.notice{margin-top:12px;color:var(--muted);font-size:.8rem;line-height:1.45}.empty{display:grid;place-items:center;height:250px;color:var(--muted);text-align:center;padding:24px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.66);display:none;align-items:center;justify-content:center;padding:16px;z-index:30}.modal.show{display:flex}.modalbox{width:min(650px,100%);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:18px}
+.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.modalhead h2{font-size:1.05rem;margin:0}.x{background:transparent;color:var(--muted);border:0;font-size:1.4rem;cursor:pointer}
+.formrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:.78rem;color:var(--muted)}.field input{background:#0d131b;border:1px solid var(--border);color:var(--text);padding:10px 11px;border-radius:11px}
+.tariffrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}.utility{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:14px}.fileBtn{position:relative;overflow:hidden}.fileBtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.spinner{width:18px;height:18px;border:2px solid #3a4654;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:-4px;margin-right:7px}@keyframes spin{to{transform:rotate(360deg)}}
+footer{color:var(--muted);font-size:.75rem;text-align:center;padding:22px 0}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.section{grid-template-columns:1fr}.chart{height:260px}}
+@media(max-width:520px){.wrap{padding:12px}.grid{gap:8px}.card{padding:13px}.kvalue{font-size:1.45rem}.actions .btn span{display:none}.formrow{grid-template-columns:1fr 1fr}.formrow .btn{grid-column:1/-1}header{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><div class="logo"><img src="icon.svg" width="30" height="30" alt=""></div><div><h1>Energia Casa</h1><div class="sub"><span class="statusdot"></span><span id="status">Connessione…</span></div></div></div>
+  <div class="actions"><button class="btn" id="refreshBtn">↻ <span>Aggiorna</span></button><button class="btn" id="settingsBtn">⚙ <span>Tariffe</span></button></div>
+</header>
+
+<div class="grid">
+  <div class="card"><div class="klabel">Potenza attuale</div><div class="kvalue" id="powerNow">—</div><div class="ksub" id="liveTime">—</div></div>
+  <div class="card"><div class="klabel">Costo teorico ora</div><div class="kvalue" id="costHour">—</div><div class="ksub" id="currentRate">Tariffa non impostata</div></div>
+  <div class="card"><div class="klabel">Consumo oggi</div><div class="kvalue" id="todayKwh">—</div><div class="ksub" id="todayCost">—</div></div>
+  <div class="card"><div class="klabel">Consumo mese</div><div class="kvalue" id="monthKwh">—</div><div class="ksub" id="monthCost">—</div></div>
+</div>
+
+<div class="tabs"><button class="tab active" data-tab="day">Oggi</button><button class="tab" data-tab="month">Mese</button><button class="tab" data-tab="year">Anno</button></div>
+
+<div class="section">
+  <div class="card chartcard">
+    <div class="charthead"><div><div class="charttitle" id="chartTitle">Potenza di oggi</div><div class="chartmeta" id="chartMeta">—</div></div><div class="pill" id="periodTotal">—</div></div>
+    <div id="chartHost" class="empty"><span><span class="spinner"></span>Caricamento dati…</span></div>
+    <div class="notice" id="coverageNote"></div>
+  </div>
+  <div class="card">
+    <div class="charttitle" id="tableTitle">Consumo per ora</div><div class="chartmeta" style="margin-bottom:10px">kWh e costo stimato</div>
+    <div class="tablewrap"><table><thead><tr><th id="colPeriod">Ora</th><th>kWh</th><th>€</th></tr></thead><tbody id="detailBody"></tbody></table></div>
+  </div>
+</div>
+<footer>Dati Shelly Pro EM-50 → ThingSpeak pubblico • Europe/Rome</footer>
+</div>
+
+<div class="modal" id="settingsModal"><div class="modalbox">
+  <div class="modalhead"><h2>Tariffe energia</h2><button class="x" id="closeSettings">×</button></div>
+  <div class="notice" style="margin:0 0 14px">Le tariffe inserite qui restano su questo dispositivo. Il file <b>tariffe.json</b> nel repository può contenere le tariffe comuni a PC e iPhone.</div>
+  <div class="formrow">
+    <div class="field"><label>Mese</label><input id="newMonth" type="month"></div>
+    <div class="field"><label>€/kWh</label><input id="newRate" type="number" step="0.0001" min="0" placeholder="0,2500"></div>
+    <button class="btn primary" id="saveRate">Salva</button>
+  </div>
+  <div id="tariffList"></div>
+  <div class="utility"><button class="btn" id="exportRates">Esporta JSON</button><label class="btn fileBtn">Importa JSON<input id="importRates" type="file" accept="application/json"></label><button class="btn" id="closeSettings2">Chiudi</button></div>
+</div></div>
+
+<script>
+const CHANNEL_ID="3493335",TZ="Europe/Rome",BASE=`https://api.thingspeak.com/channels/${CHANNEL_ID}`,MAX_RESULTS=8000,CHUNK_DAYS=14;
+const state={tariffs:{},fileTariffs:{},localTariffs:{},tab:"day",day:null,month:null,year:null};
+const $=s=>document.querySelector(s);
+const fmt=(n,d=2)=>Number.isFinite(n)?n.toLocaleString("it-IT",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
+const money=n=>Number.isFinite(n)?n.toLocaleString("it-IT",{style:"currency",currency:"EUR"}):"—";
+const numeric=v=>{if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)?n:null};
+const monthKey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+const startDay=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x};
+const startMonth=d=>new Date(d.getFullYear(),d.getMonth(),1);
+const startYear=d=>new Date(d.getFullYear(),0,1);
+const tsFmt=d=>d.toISOString().slice(0,19).replace("T"," ");
+function setStatus(t,ok=true){$("#status").textContent=t;document.querySelector(".statusdot").style.background=ok?"var(--accent2)":"var(--danger)"}
+function localParts(d){const f=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",hourCycle:"h23"}),p={};for(const x of f.formatToParts(d))if(x.type!=="literal")p[x.type]=x.value;return p}
+async function ts(path,params={}){const u=new URL(BASE+path);for(const[k,v]of Object.entries(params))if(v!==null&&v!==undefined&&v!=="")u.searchParams.set(k,String(v));const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error("ThingSpeak HTTP "+r.status);const data=await r.json();if(data===-1)throw new Error("Canale ThingSpeak non accessibile: verifica che sia pubblico.");return data}
+function normalize(obj){const out={};for(const[m,v]of Object.entries(obj||{})){if(!/^\\d{4}-\\d{2}$/.test(m))continue;const n=typeof v==="object"&&v!==null?Number(v.rate):Number(v);if(Number.isFinite(n)&&n>=0&&n<=10)out[m]=n}return out}
+async function loadTariffs(){let f={},l={};try{const r=await fetch("tariffe.json",{cache:"no-store"});if(r.ok)f=await r.json()}catch{}try{l=JSON.parse(localStorage.getItem("energiaCasaTariffe")||"{}")}catch{}state.fileTariffs=normalize(f);state.localTariffs=normalize(l);state.tariffs={...state.fileTariffs,...state.localTariffs};renderTariffs()}
+const rateFor=m=>Number.isFinite(Number(state.tariffs[m]))?Number(state.tariffs[m]):null;
+function deltas(feeds,start,end){const a=[],s=start.getTime(),e=end.getTime();for(let i=1;i<feeds.length;i++){const p=numeric(feeds[i-1].field2),c=numeric(feeds[i].field2),t=new Date(feeds[i].created_at);if(p===null||c===null||!Number.isFinite(t.getTime())||t.getTime()<s||t.getTime()>=e)continue;const wh=c-p;if(wh>=0)a.push({time:t,kwh:wh/1000})}return a}
+async function field2Range(start,end){const out=[];let cur=new Date(start),fin=new Date(end),ms=CHUNK_DAYS*86400000;while(cur<fin){const next=new Date(Math.min(cur.getTime()+ms,fin.getTime()));const d=await ts("/fields/2.json",{start:tsFmt(cur),end:tsFmt(next),results:MAX_RESULTS});if(Array.isArray(d.feeds))out.push(...d.feeds);cur=next}const seen=new Set();return out.filter(f=>{const k=f.entry_id||f.created_at;if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))}
+async function loadLive(){const d=await ts("/feeds.json",{results:2}),f=(d.feeds||[]).at(-1);if(!f)throw new Error("Nessun dato.");const power=numeric(f.field1),rate=rateFor(monthKey(new Date()));$("#powerNow").textContent=power>=1000?fmt(power/1000,2)+" kW":fmt(power,0)+" W";$("#liveTime").textContent="Agg. "+new Date(f.created_at).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});$("#currentRate").textContent=rate===null?"Tariffa non impostata":`Tariffa ${fmt(rate,4)} €/kWh`;$("#costHour").textContent=rate!==null&&Number.isFinite(power)?money(power/1000*rate)+"/h":"—";setStatus("Online • ultimo dato "+new Date(f.created_at).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"}))}
+async function loadDay(){const now=new Date(),start=startDay(now),fetchStart=new Date(start.getTime()-600000),data=await ts("/feeds.json",{start:tsFmt(fetchStart),end:tsFmt(now),results:1000}),feeds=(data.feeds||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)),ds=deltas(feeds,start,now),hm=new Map;for(const r of ds){const h=Number(localParts(r.time).hour);hm.set(h,(hm.get(h)||0)+r.kwh)}const sm=start.getTime(),em=now.getTime(),points=feeds.filter(f=>{const t=new Date(f.created_at).getTime();return t>=sm&&t<em}).map(f=>({t:f.created_at,powerW:numeric(f.field1)}));const total=ds.reduce((s,r)=>s+r.kwh,0);state.day={totalKwh:total,points,hourly:Array.from({length:24},(_,hour)=>({hour,kwh:hm.get(hour)||0})),firstAvailable:feeds[0]?.created_at||null};const rate=rateFor(monthKey(now));$("#todayKwh").textContent=fmt(total,3)+" kWh";$("#todayCost").textContent=rate===null?"Tariffa non impostata":money(total*rate)}
+async function summary(start,end,group){const feeds=await field2Range(new Date(start.getTime()-600000),end),ds=deltas(feeds,start,end),m=new Map;for(const r of ds){const p=localParts(r.time),k=group==="day"?`${p.year}-${p.month}-${p.day}`:`${p.year}-${p.month}`;m.set(k,(m.get(k)||0)+r.kwh)}const series=[...m].sort(([a],[b])=>a.localeCompare(b)).map(([key,kwh])=>({key,kwh}));return{totalKwh:series.reduce((s,x)=>s+x.kwh,0),series,firstAvailable:feeds[0]?.created_at||null}}
+async function loadMonth(){const now=new Date();state.month=await summary(startMonth(now),now,"day");const r=rateFor(monthKey(now));$("#monthKwh").textContent=fmt(state.month.totalKwh,2)+" kWh";$("#monthCost").textContent=r===null?"Tariffa non impostata":money(state.month.totalKwh*r)}
+async function loadYear(){const now=new Date();state.year=await summary(startYear(now),now,"month")}
+function lineChart(points){const v=points.filter(x=>Number.isFinite(x.powerW));if(!v.length)return'<div class="empty">Nessun dato disponibile.</div>';const W=900,H=290,p={l:52,r:15,t:16,b:34},iw=W-p.l-p.r,ih=H-p.t-p.b,max=Math.max(500,...v.map(x=>x.powerW))*1.08,minT=new Date(v[0].t).getTime(),maxT=new Date(v.at(-1).t).getTime()||minT+1,x=t=>p.l+((new Date(t).getTime()-minT)/(maxT-minT||1))*iw,y=n=>p.t+ih-n/max*ih;let g="",lab="";for(let i=0;i<=4;i++){const yy=p.t+ih*i/4,n=max*(1-i/4);g+=`<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="#24303d"/>`;lab+=`<text x="${p.l-8}" y="${yy+4}" text-anchor="end" fill="#8f9baa" font-size="12">${Math.round(n)}</text>`}for(let h=0;h<=24;h+=4){const xx=p.l+iw*h/24;lab+=`<text x="${xx}" y="${H-9}" text-anchor="middle" fill="#8f9baa" font-size="12">${String(h).padStart(2,"0")}</text>`}const pts=v.map(n=>`${x(n.t).toFixed(1)},${y(n.powerW).toFixed(1)}`).join(" ");return`<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${g}${lab}<polyline fill="none" stroke="#4cc9f0" stroke-width="3" vector-effect="non-scaling-stroke" points="${pts}"/></svg>`}
+function barChart(rows,labelFn){const v=rows.filter(x=>Number.isFinite(x.kwh));if(!v.length)return'<div class="empty">Nessun dato disponibile.</div>';const W=900,H=290,p={l:52,r:15,t:16,b:42},iw=W-p.l-p.r,ih=H-p.t-p.b,max=Math.max(.1,...v.map(x=>x.kwh))*1.12;let g="",lab="",bars="";for(let i=0;i<=4;i++){const yy=p.t+ih*i/4,n=max*(1-i/4);g+=`<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="#24303d"/>`;lab+=`<text x="${p.l-8}" y="${yy+4}" text-anchor="end" fill="#8f9baa" font-size="12">${fmt(n,1)}</text>`}const slot=iw/v.length,bw=Math.max(3,slot*.62);v.forEach((r,i)=>{const hh=r.kwh/max*ih,xx=p.l+i*slot+(slot-bw)/2,yy=p.t+ih-hh;bars+=`<rect x="${xx}" y="${yy}" width="${bw}" height="${hh}" rx="3" fill="#4cc9f0"/>`;const every=v.length>20?5:1;if(i%every===0||i===v.length-1)lab+=`<text x="${p.l+i*slot+slot/2}" y="${H-12}" text-anchor="middle" fill="#8f9baa" font-size="11">${labelFn(r,i)}</text>`});return`<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${g}${lab}${bars}</svg>`}
+function renderDay(){const d=state.day;if(!d)return;const r=rateFor(monthKey(new Date()));$("#chartTitle").textContent="Potenza di oggi";$("#chartMeta").textContent="Campioni ogni 5 minuti";$("#periodTotal").textContent=fmt(d.totalKwh,3)+" kWh";$("#chartHost").className="";$("#chartHost").innerHTML=lineChart(d.points);$("#tableTitle").textContent="Consumo per ora";$("#colPeriod").textContent="Ora";$("#detailBody").innerHTML=d.hourly.map(x=>`<tr><td>${String(x.hour).padStart(2,"0")}:00–${String((x.hour+1)%24).padStart(2,"0")}:00</td><td>${fmt(x.kwh,3)}</td><td>${r===null?"—":money(x.kwh*r)}</td></tr>`).join("");$("#coverageNote").textContent=d.firstAvailable?"Dati disponibili da "+new Date(d.firstAvailable).toLocaleString("it-IT"):""}
+function renderMonth(){const d=state.month;if(!d)return;const now=new Date(),r=rateFor(monthKey(now));$("#chartTitle").textContent="Consumo del mese";$("#chartMeta").textContent=now.toLocaleDateString("it-IT",{month:"long",year:"numeric"});$("#periodTotal").textContent=fmt(d.totalKwh,2)+" kWh";$("#chartHost").className="";$("#chartHost").innerHTML=barChart(d.series,x=>String(Number(x.key.slice(-2))));$("#tableTitle").textContent="Consumo per giorno";$("#colPeriod").textContent="Giorno";$("#detailBody").innerHTML=d.series.map(x=>`<tr><td>${x.key.split("-").reverse().join("/")}</td><td>${fmt(x.kwh,2)}</td><td>${r===null?"—":money(x.kwh*r)}</td></tr>`).join("");$("#coverageNote").textContent="Il totale usa il contatore cumulativo Shelly e solo lo storico già presente in ThingSpeak."}
+function renderYear(){const d=state.year;if(!d)return;$("#chartTitle").textContent="Consumo dell’anno";$("#chartMeta").textContent=String(new Date().getFullYear());$("#periodTotal").textContent=fmt(d.totalKwh,1)+" kWh";$("#chartHost").className="";$("#chartHost").innerHTML=barChart(d.series,x=>["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"][Number(x.key.slice(-2))-1]);$("#tableTitle").textContent="Consumo per mese";$("#colPeriod").textContent="Mese";$("#detailBody").innerHTML=d.series.map(x=>{const r=rateFor(x.key),dt=new Date(Number(x.key.slice(0,4)),Number(x.key.slice(5,7))-1,1);return`<tr><td>${dt.toLocaleDateString("it-IT",{month:"long"})}</td><td>${fmt(x.kwh,2)}</td><td>${r===null?"—":money(x.kwh*r)}</td></tr>`}).join("");const c=d.series.reduce((s,x)=>{const r=rateFor(x.key);return s+(r===null?0:x.kwh*r)},0);$("#coverageNote").textContent="Costo noto: "+money(c)}
+function renderCurrent(){state.tab==="day"?renderDay():state.tab==="month"?renderMonth():renderYear()}
+function saveLocal(){localStorage.setItem("energiaCasaTariffe",JSON.stringify(state.localTariffs))}
+function renderTariffs(){const arr=Object.keys(state.tariffs).sort((a,b)=>b.localeCompare(a));$("#tariffList").innerHTML=arr.length?arr.map(m=>{const local=Object.prototype.hasOwnProperty.call(state.localTariffs,m);return`<div class="tariffrow"><div>${m}<div class="chartmeta">${local?"Questo dispositivo":"tariffe.json"}</div></div><div><b>${fmt(Number(state.tariffs[m]),4)}</b> €/kWh</div><button class="btn" data-del="${m}" ${local?"":"disabled"}>Elimina</button></div>`}).join(""):'<div class="empty" style="height:120px">Nessuna tariffa inserita.</div>';document.querySelectorAll("[data-del]").forEach(b=>{if(!b.disabled)b.onclick=async()=>{delete state.localTariffs[b.dataset.del];saveLocal();await loadTariffs();await refreshAll()}})}
+async function refreshAll(){setStatus("Aggiornamento…");try{await Promise.all([loadLive(),loadDay(),loadMonth()]);if(state.tab==="year")await loadYear();renderCurrent()}catch(e){setStatus(e.message||String(e),false);$("#chartHost").className="empty";$("#chartHost").textContent=e.message||String(e)}}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=async()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.tab=b.dataset.tab;if(state.tab==="year"&&!state.year){$("#chartHost").className="empty";$("#chartHost").innerHTML='<span><span class="spinner"></span>Caricamento anno…</span>';try{await loadYear()}catch(e){setStatus(e.message,false)}}renderCurrent()});
+$("#refreshBtn").onclick=refreshAll;$("#settingsBtn").onclick=()=>{$("#settingsModal").classList.add("show");renderTariffs()};$("#closeSettings").onclick=$("#closeSettings2").onclick=()=>$("#settingsModal").classList.remove("show");
+$("#saveRate").onclick=async()=>{const m=$("#newMonth").value,r=Number($("#newRate").value.replace(",","."));if(!m||!Number.isFinite(r)){alert("Inserisci mese e tariffa.");return}state.localTariffs[m]=r;saveLocal();$("#newRate").value="";await loadTariffs();await refreshAll()};
+$("#exportRates").onclick=()=>{const all={...state.fileTariffs,...state.localTariffs},blob=new Blob([JSON.stringify(all,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="tariffe.json";a.click();URL.revokeObjectURL(a.href)};
+$("#importRates").onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{state.localTariffs=normalize(JSON.parse(await f.text()));saveLocal();await loadTariffs();await refreshAll()}catch{alert("JSON non valido.")}e.target.value=""};
+$("#newMonth").value=monthKey(new Date());
+(async()=>{if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});await loadTariffs();await refreshAll();setInterval(()=>loadLive().catch(()=>{}),60000)})();
+</script>
+</body>
+</html>
