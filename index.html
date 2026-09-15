@@ -1,119 +1,696 @@
 <!doctype html>
 <html lang="it">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b0f14">
-<title>Energia Casa</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg">
-<style>
-:root{--bg:#0b0f14;--panel:#111821;--panel2:#161f2a;--text:#f5f7fa;--muted:#8f9baa;--accent:#4cc9f0;--accent2:#7be495;--danger:#ff6b6b;--border:#24303d;--shadow:0 12px 30px rgba(0,0,0,.28)}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
-button,input{font:inherit}.wrap{max-width:1180px;margin:auto;padding:18px}header{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:18px}
-.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:14px;background:var(--panel2);display:grid;place-items:center;border:1px solid var(--border)}
-.brand h1{font-size:1.25rem;margin:0}.sub{color:var(--muted);font-size:.86rem;margin-top:2px}.statusdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent2);margin-right:6px}
-.actions{display:flex;gap:8px}.btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 12px;border-radius:12px;cursor:pointer}.btn.primary{background:var(--accent);color:#041017;border-color:transparent;font-weight:700}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:linear-gradient(180deg,var(--panel),#0f151d);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
-.klabel{color:var(--muted);font-size:.82rem}.kvalue{font-size:1.8rem;font-weight:800;letter-spacing:-.03em;margin-top:7px}.ksub{color:var(--muted);font-size:.78rem;margin-top:5px}
-.tabs{display:flex;gap:8px;margin:16px 0 12px}.tab{padding:9px 13px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer}.tab.active{background:var(--panel2);color:var(--text);border-color:#344253}
-.section{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:12px}.chartcard{min-height:390px}.charthead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
-.charttitle{font-weight:750}.chartmeta{font-size:.8rem;color:var(--muted);margin-top:3px}.chart{width:100%;height:295px;display:block}.pill{font-size:.78rem;background:#0d131b;border:1px solid var(--border);padding:7px 9px;border-radius:10px}
-.tablewrap{max-height:330px;overflow:auto;border-radius:12px;border:1px solid var(--border)}table{width:100%;border-collapse:collapse;font-size:.86rem}th,td{padding:10px 11px;border-bottom:1px solid var(--border);text-align:right}th:first-child,td:first-child{text-align:left}th{position:sticky;top:0;background:var(--panel2);color:var(--muted)}
-.notice{margin-top:12px;color:var(--muted);font-size:.8rem;line-height:1.45}.empty{display:grid;place-items:center;height:250px;color:var(--muted);text-align:center;padding:24px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.66);display:none;align-items:center;justify-content:center;padding:16px;z-index:30}.modal.show{display:flex}.modalbox{width:min(650px,100%);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:18px}
-.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.modalhead h2{font-size:1.05rem;margin:0}.x{background:transparent;color:var(--muted);border:0;font-size:1.4rem;cursor:pointer}
-.formrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:.78rem;color:var(--muted)}.field input{background:#0d131b;border:1px solid var(--border);color:var(--text);padding:10px 11px;border-radius:11px}
-.tariffrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}.utility{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:14px}.fileBtn{position:relative;overflow:hidden}.fileBtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.spinner{width:18px;height:18px;border:2px solid #3a4654;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:-4px;margin-right:7px}@keyframes spin{to{transform:rotate(360deg)}}
-footer{color:var(--muted);font-size:.75rem;text-align:center;padding:22px 0}
-@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.section{grid-template-columns:1fr}.chart{height:260px}}
-@media(max-width:520px){.wrap{padding:12px}.grid{gap:8px}.card{padding:13px}.kvalue{font-size:1.45rem}.actions .btn span{display:none}.formrow{grid-template-columns:1fr 1fr}.formrow .btn{grid-column:1/-1}header{align-items:flex-start}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <title>Energia Casa</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#171f2f;
+      --panel2:#1b2435;
+      --panel3:#111827;
+      --border:#2d3748;
+      --grid:#39455a;
+      --text:#f5f7fb;
+      --muted:#a8b3c7;
+      --blue:#4f8cff;
+      --blue2:#6faeff;
+      --green:#63e891;
+      --orange:#ffb15a;
+      --shadow:0 12px 28px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;background:#060b14;color:var(--text);
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    }
+    .wrap{max-width:1600px;margin:0 auto;padding:6px}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{
+      width:44px;height:44px;border-radius:12px;background:linear-gradient(180deg,#0f1725,#0b1220);
+      display:grid;place-items:center;border:1px solid var(--border)
+    }
+    .brand h1{margin:0;font-size:18px;line-height:1.1}
+    .status{font-size:12px;color:var(--muted);margin-top:3px}
+    .status.bad{color:#ff8b8b}
+    .actions{display:flex;gap:8px}
+    .btn{
+      border:1px solid var(--border);background:var(--panel3);color:var(--text);
+      border-radius:12px;padding:10px 14px;cursor:pointer;font:inherit
+    }
+    .grid-top{
+      display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:6px
+    }
+    .stat{
+      background:linear-gradient(180deg,#1b2130,#171f2e);border:1px solid #30384b;
+      border-radius:8px;padding:8px 10px;min-height:64px;box-shadow:var(--shadow)
+    }
+    .stat .label{font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:#d6deef;opacity:.95}
+    .stat .value{font-size:31px;font-weight:800;line-height:1.1;margin-top:3px}
+    .stat .sub{font-size:12px;color:var(--muted);margin-top:4px}
+    .grid-main{
+      display:grid;grid-template-columns:1fr 1fr;gap:6px
+    }
+    .panel{
+      background:linear-gradient(180deg,#1a2130,#171f2d);border:1px solid #30384b;
+      border-radius:8px;padding:8px 10px;box-shadow:var(--shadow);min-height:335px;position:relative
+    }
+    .panel h2{
+      margin:0 0 8px 0;font-size:11px;text-transform:uppercase;color:#dce5f7;letter-spacing:.05em
+    }
+    .meta{
+      position:absolute;top:8px;right:10px;font-size:10px;color:var(--muted)
+    }
+    .chart-wrap{height:265px}
+    .chart{width:100%;height:100%}
+    .summary-head{display:flex;justify-content:space-around;gap:20px;margin:4px 0 10px 0;text-align:center}
+    .summary-num .big{font-size:31px;font-weight:800;color:var(--blue)}
+    .summary-num .cap{font-size:11px;color:var(--muted);text-transform:uppercase}
+    .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;font-size:11px;color:#dbe4f8}
+    .legend span{display:inline-flex;align-items:center;gap:6px}
+    .dot{display:inline-block;width:10px;height:10px;border-radius:2px}
+    .foot{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      margin-top:6px;color:var(--muted);font-size:10px
+    }
+    .timebuttons{display:flex;gap:6px;justify-content:center}
+    .timebuttons .pill{
+      border:1px solid var(--border);padding:2px 8px;border-radius:999px;background:#0f1726;color:#cfd8eb;font-size:10px
+    }
+    .timebuttons .pill.active{background:var(--blue);color:white;border-color:transparent}
+    .empty{display:grid;place-items:center;height:240px;color:var(--muted);text-align:center}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+    .modal.show{display:flex}
+    .modalbox{
+      width:min(620px,100%);background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px
+    }
+    .modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .modalhead h3{margin:0;font-size:18px}
+    .x{background:transparent;border:0;color:var(--muted);font-size:24px;cursor:pointer}
+    .notice{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+    .formrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:10px}
+    input{width:100%;background:#0e1625;border:1px solid var(--border);border-radius:10px;padding:10px 11px;color:var(--text);font:inherit}
+    .tariffrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+    .helper{font-size:11px;color:var(--muted)}
+    code{background:#101827;padding:2px 6px;border-radius:6px}
+    @media (max-width:1100px){
+      .grid-top{grid-template-columns:repeat(2,1fr)}
+      .grid-main{grid-template-columns:1fr}
+    }
+    @media (max-width:560px){
+      .wrap{padding:4px}
+      .grid-top{grid-template-columns:1fr}
+      .stat .value{font-size:28px}
+      .formrow{grid-template-columns:1fr}
+      .summary-head{gap:8px}
+      .summary-num .big{font-size:24px}
+      .actions .btn span{display:none}
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <div class="brand"><div class="logo"><img src="icon.svg" width="30" height="30" alt=""></div><div><h1>Energia Casa</h1><div class="sub"><span class="statusdot"></span><span id="status">Connessione…</span></div></div></div>
-  <div class="actions"><button class="btn" id="refreshBtn">↻ <span>Aggiorna</span></button><button class="btn" id="settingsBtn">⚙ <span>Tariffe</span></button></div>
-</header>
+  <div class="wrap">
+    <div class="toolbar">
+      <div class="brand">
+        <div class="logo"><img src="icon.svg" width="28" height="28" alt=""></div>
+        <div>
+          <h1>Energia Casa</h1>
+          <div id="status" class="status">Connessione…</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="refreshBtn" class="btn">↻ <span>Aggiorna</span></button>
+        <button id="tariffeBtn" class="btn">⚙ <span>Tariffe</span></button>
+      </div>
+    </div>
 
-<div class="grid">
-  <div class="card"><div class="klabel">Potenza attuale</div><div class="kvalue" id="powerNow">—</div><div class="ksub" id="liveTime">—</div></div>
-  <div class="card"><div class="klabel">Costo teorico ora</div><div class="kvalue" id="costHour">—</div><div class="ksub" id="currentRate">Tariffa non impostata</div></div>
-  <div class="card"><div class="klabel">Consumo oggi</div><div class="kvalue" id="todayKwh">—</div><div class="ksub" id="todayCost">—</div></div>
-  <div class="card"><div class="klabel">Consumo mese</div><div class="kvalue" id="monthKwh">—</div><div class="ksub" id="monthCost">—</div></div>
-</div>
+    <div class="grid-top">
+      <div class="stat">
+        <div class="label">Casa</div>
+        <div class="value" id="cardPower">—</div>
+        <div class="sub" id="cardPowerSub">Potenza attuale</div>
+      </div>
+      <div class="stat">
+        <div class="label">Costo ora (stima)</div>
+        <div class="value" id="cardHourCost">—</div>
+        <div class="sub" id="cardRate">Tariffa non impostata</div>
+      </div>
+      <div class="stat">
+        <div class="label">Ora locale</div>
+        <div class="value" id="cardClock">--:--:--</div>
+        <div class="sub" id="cardDate">—</div>
+      </div>
+      <div class="stat">
+        <div class="label">Oggi</div>
+        <div class="value" id="cardTodayKwh">—</div>
+        <div class="sub" id="cardTodayCost">—</div>
+      </div>
+      <div class="stat">
+        <div class="label">Da inizio mese</div>
+        <div class="value" id="cardMonthKwh">—</div>
+        <div class="sub" id="cardMonthCost">—</div>
+      </div>
+    </div>
 
-<div class="tabs"><button class="tab active" data-tab="day">Oggi</button><button class="tab" data-tab="month">Mese</button><button class="tab" data-tab="year">Anno</button></div>
+    <div class="grid-main">
+      <div class="panel">
+        <h2>Consumi ultimi 7 giorni</h2>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--green)"></i>Casa (kWh)</span>
+          <span><i class="dot" style="background:var(--blue)"></i>Costo (€)</span>
+        </div>
+        <div class="meta" id="meta7d">—</div>
+        <div class="chart-wrap" id="chart7dWrap"><div class="empty">Caricamento…</div></div>
+      </div>
 
-<div class="section">
-  <div class="card chartcard">
-    <div class="charthead"><div><div class="charttitle" id="chartTitle">Potenza di oggi</div><div class="chartmeta" id="chartMeta">—</div></div><div class="pill" id="periodTotal">—</div></div>
-    <div id="chartHost" class="empty"><span><span class="spinner"></span>Caricamento dati…</span></div>
-    <div class="notice" id="coverageNote"></div>
+      <div class="panel">
+        <h2>Riepilogo costi (stima)</h2>
+        <div class="summary-head">
+          <div class="summary-num">
+            <div class="big" id="sumTodayCost">—</div>
+            <div class="cap">Oggi</div>
+          </div>
+          <div class="summary-num">
+            <div class="big" id="sumMonthCost">—</div>
+            <div class="cap">Da inizio mese</div>
+          </div>
+        </div>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--blue)"></i>Consumo (kWh)</span>
+          <span><i class="dot" style="background:var(--green)"></i>Costo (€)</span>
+        </div>
+        <div class="chart-wrap" id="chartSummaryWrap"><div class="empty">Caricamento…</div></div>
+        <div class="foot"><span>Stima indicativa, non sostituisce la bolletta.</span></div>
+      </div>
+
+      <div class="panel">
+        <h2>Potenza istantanea</h2>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--blue)"></i>Casa</span>
+        </div>
+        <div class="meta" id="metaPower24h">—</div>
+        <div class="chart-wrap" id="chartPowerWrap"><div class="empty">Caricamento…</div></div>
+        <div class="foot">
+          <span id="footLastPoint">Ultimo dato: —</span>
+          <div class="timebuttons">
+            <span class="pill">1h</span><span class="pill">3h</span><span class="pill">6h</span>
+            <span class="pill">12h</span><span class="pill active">1d</span><span class="pill">7d</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Consumo per intervallo</h2>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--green)"></i>Casa</span>
+        </div>
+        <div class="meta" id="metaIntervals">—</div>
+        <div class="chart-wrap" id="chartIntervalsWrap"><div class="empty">Caricamento…</div></div>
+        <div class="foot"><span id="footIntervalRange">Intervallo: —</span></div>
+      </div>
+    </div>
   </div>
-  <div class="card">
-    <div class="charttitle" id="tableTitle">Consumo per ora</div><div class="chartmeta" style="margin-bottom:10px">kWh e costo stimato</div>
-    <div class="tablewrap"><table><thead><tr><th id="colPeriod">Ora</th><th>kWh</th><th>€</th></tr></thead><tbody id="detailBody"></tbody></table></div>
-  </div>
-</div>
-<footer>Dati Shelly Pro EM-50 → ThingSpeak pubblico • Europe/Rome</footer>
-</div>
 
-<div class="modal" id="settingsModal"><div class="modalbox">
-  <div class="modalhead"><h2>Tariffe energia</h2><button class="x" id="closeSettings">×</button></div>
-  <div class="notice" style="margin:0 0 14px">Le tariffe inserite qui restano su questo dispositivo. Il file <b>tariffe.json</b> nel repository può contenere le tariffe comuni a PC e iPhone.</div>
-  <div class="formrow">
-    <div class="field"><label>Mese</label><input id="newMonth" type="month"></div>
-    <div class="field"><label>€/kWh</label><input id="newRate" type="number" step="0.0001" min="0" placeholder="0,2500"></div>
-    <button class="btn primary" id="saveRate">Salva</button>
+  <div class="modal" id="tariffeModal">
+    <div class="modalbox">
+      <div class="modalhead">
+        <h3>Tariffe energia</h3>
+        <button class="x" id="closeTariffe">×</button>
+      </div>
+      <div class="notice">
+        Tariffa predefinita: <b>0,31 €/kWh</b> per tutti i mesi. <br>Puoi sovrascrivere il valore mese per mese. <br>
+        Le tariffe salvate qui restano sul dispositivo/browser. <br>
+        Se vuoi tenerle sincronizzate, puoi modificare anche il file <code>tariffe.json</code> nel repository GitHub.
+      </div>
+      <div class="formrow">
+        <input id="newMonth" type="month">
+        <input id="newRate" type="number" min="0" step="0.0001" placeholder="0,2500">
+        <button id="saveRate" class="btn">Salva</button>
+      </div>
+      <div id="tariffList"></div>
+      <div class="helper">Suggerimento: usa un coefficiente totale realistico, ad esempio energia + spese variabili che vuoi considerare.</div>
+    </div>
   </div>
-  <div id="tariffList"></div>
-  <div class="utility"><button class="btn" id="exportRates">Esporta JSON</button><label class="btn fileBtn">Importa JSON<input id="importRates" type="file" accept="application/json"></label><button class="btn" id="closeSettings2">Chiudi</button></div>
-</div></div>
 
-<script>
-const CHANNEL_ID="3493335",TZ="Europe/Rome",BASE=`https://api.thingspeak.com/channels/${CHANNEL_ID}`,MAX_RESULTS=8000,CHUNK_DAYS=14;
-const state={tariffs:{},fileTariffs:{},localTariffs:{},tab:"day",day:null,month:null,year:null};
-const $=s=>document.querySelector(s);
-const fmt=(n,d=2)=>Number.isFinite(n)?n.toLocaleString("it-IT",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
-const money=n=>Number.isFinite(n)?n.toLocaleString("it-IT",{style:"currency",currency:"EUR"}):"—";
-const numeric=v=>{if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)?n:null};
-const monthKey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
-const startDay=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x};
-const startMonth=d=>new Date(d.getFullYear(),d.getMonth(),1);
-const startYear=d=>new Date(d.getFullYear(),0,1);
-const tsFmt=d=>d.toISOString().slice(0,19).replace("T"," ");
-function setStatus(t,ok=true){$("#status").textContent=t;document.querySelector(".statusdot").style.background=ok?"var(--accent2)":"var(--danger)"}
-function localParts(d){const f=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",hourCycle:"h23"}),p={};for(const x of f.formatToParts(d))if(x.type!=="literal")p[x.type]=x.value;return p}
-async function ts(path,params={}){const u=new URL(BASE+path);for(const[k,v]of Object.entries(params))if(v!==null&&v!==undefined&&v!=="")u.searchParams.set(k,String(v));const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error("ThingSpeak HTTP "+r.status);const data=await r.json();if(data===-1)throw new Error("Canale ThingSpeak non accessibile: verifica che sia pubblico.");return data}
-function normalize(obj){const out={};for(const[m,v]of Object.entries(obj||{})){if(!/^\\d{4}-\\d{2}$/.test(m))continue;const n=typeof v==="object"&&v!==null?Number(v.rate):Number(v);if(Number.isFinite(n)&&n>=0&&n<=10)out[m]=n}return out}
-async function loadTariffs(){let f={},l={};try{const r=await fetch("tariffe.json",{cache:"no-store"});if(r.ok)f=await r.json()}catch{}try{l=JSON.parse(localStorage.getItem("energiaCasaTariffe")||"{}")}catch{}state.fileTariffs=normalize(f);state.localTariffs=normalize(l);state.tariffs={...state.fileTariffs,...state.localTariffs};renderTariffs()}
-const rateFor=m=>Number.isFinite(Number(state.tariffs[m]))?Number(state.tariffs[m]):null;
-function deltas(feeds,start,end){const a=[],s=start.getTime(),e=end.getTime();for(let i=1;i<feeds.length;i++){const p=numeric(feeds[i-1].field2),c=numeric(feeds[i].field2),t=new Date(feeds[i].created_at);if(p===null||c===null||!Number.isFinite(t.getTime())||t.getTime()<s||t.getTime()>=e)continue;const wh=c-p;if(wh>=0)a.push({time:t,kwh:wh/1000})}return a}
-async function field2Range(start,end){const out=[];let cur=new Date(start),fin=new Date(end),ms=CHUNK_DAYS*86400000;while(cur<fin){const next=new Date(Math.min(cur.getTime()+ms,fin.getTime()));const d=await ts("/fields/2.json",{start:tsFmt(cur),end:tsFmt(next),results:MAX_RESULTS});if(Array.isArray(d.feeds))out.push(...d.feeds);cur=next}const seen=new Set();return out.filter(f=>{const k=f.entry_id||f.created_at;if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))}
-async function loadLive(){const d=await ts("/feeds.json",{results:2}),f=(d.feeds||[]).at(-1);if(!f)throw new Error("Nessun dato.");const power=numeric(f.field1),rate=rateFor(monthKey(new Date()));$("#powerNow").textContent=power>=1000?fmt(power/1000,2)+" kW":fmt(power,0)+" W";$("#liveTime").textContent="Agg. "+new Date(f.created_at).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});$("#currentRate").textContent=rate===null?"Tariffa non impostata":`Tariffa ${fmt(rate,4)} €/kWh`;$("#costHour").textContent=rate!==null&&Number.isFinite(power)?money(power/1000*rate)+"/h":"—";setStatus("Online • ultimo dato "+new Date(f.created_at).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"}))}
-async function loadDay(){const now=new Date(),start=startDay(now),fetchStart=new Date(start.getTime()-600000),data=await ts("/feeds.json",{start:tsFmt(fetchStart),end:tsFmt(now),results:1000}),feeds=(data.feeds||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)),ds=deltas(feeds,start,now),hm=new Map;for(const r of ds){const h=Number(localParts(r.time).hour);hm.set(h,(hm.get(h)||0)+r.kwh)}const sm=start.getTime(),em=now.getTime(),points=feeds.filter(f=>{const t=new Date(f.created_at).getTime();return t>=sm&&t<em}).map(f=>({t:f.created_at,powerW:numeric(f.field1)}));const total=ds.reduce((s,r)=>s+r.kwh,0);state.day={totalKwh:total,points,hourly:Array.from({length:24},(_,hour)=>({hour,kwh:hm.get(hour)||0})),firstAvailable:feeds[0]?.created_at||null};const rate=rateFor(monthKey(now));$("#todayKwh").textContent=fmt(total,3)+" kWh";$("#todayCost").textContent=rate===null?"Tariffa non impostata":money(total*rate)}
-async function summary(start,end,group){const feeds=await field2Range(new Date(start.getTime()-600000),end),ds=deltas(feeds,start,end),m=new Map;for(const r of ds){const p=localParts(r.time),k=group==="day"?`${p.year}-${p.month}-${p.day}`:`${p.year}-${p.month}`;m.set(k,(m.get(k)||0)+r.kwh)}const series=[...m].sort(([a],[b])=>a.localeCompare(b)).map(([key,kwh])=>({key,kwh}));return{totalKwh:series.reduce((s,x)=>s+x.kwh,0),series,firstAvailable:feeds[0]?.created_at||null}}
-async function loadMonth(){const now=new Date();state.month=await summary(startMonth(now),now,"day");const r=rateFor(monthKey(now));$("#monthKwh").textContent=fmt(state.month.totalKwh,2)+" kWh";$("#monthCost").textContent=r===null?"Tariffa non impostata":money(state.month.totalKwh*r)}
-async function loadYear(){const now=new Date();state.year=await summary(startYear(now),now,"month")}
-function lineChart(points){const v=points.filter(x=>Number.isFinite(x.powerW));if(!v.length)return'<div class="empty">Nessun dato disponibile.</div>';const W=900,H=290,p={l:52,r:15,t:16,b:34},iw=W-p.l-p.r,ih=H-p.t-p.b,max=Math.max(500,...v.map(x=>x.powerW))*1.08,minT=new Date(v[0].t).getTime(),maxT=new Date(v.at(-1).t).getTime()||minT+1,x=t=>p.l+((new Date(t).getTime()-minT)/(maxT-minT||1))*iw,y=n=>p.t+ih-n/max*ih;let g="",lab="";for(let i=0;i<=4;i++){const yy=p.t+ih*i/4,n=max*(1-i/4);g+=`<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="#24303d"/>`;lab+=`<text x="${p.l-8}" y="${yy+4}" text-anchor="end" fill="#8f9baa" font-size="12">${Math.round(n)}</text>`}for(let h=0;h<=24;h+=4){const xx=p.l+iw*h/24;lab+=`<text x="${xx}" y="${H-9}" text-anchor="middle" fill="#8f9baa" font-size="12">${String(h).padStart(2,"0")}</text>`}const pts=v.map(n=>`${x(n.t).toFixed(1)},${y(n.powerW).toFixed(1)}`).join(" ");return`<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${g}${lab}<polyline fill="none" stroke="#4cc9f0" stroke-width="3" vector-effect="non-scaling-stroke" points="${pts}"/></svg>`}
-function barChart(rows,labelFn){const v=rows.filter(x=>Number.isFinite(x.kwh));if(!v.length)return'<div class="empty">Nessun dato disponibile.</div>';const W=900,H=290,p={l:52,r:15,t:16,b:42},iw=W-p.l-p.r,ih=H-p.t-p.b,max=Math.max(.1,...v.map(x=>x.kwh))*1.12;let g="",lab="",bars="";for(let i=0;i<=4;i++){const yy=p.t+ih*i/4,n=max*(1-i/4);g+=`<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="#24303d"/>`;lab+=`<text x="${p.l-8}" y="${yy+4}" text-anchor="end" fill="#8f9baa" font-size="12">${fmt(n,1)}</text>`}const slot=iw/v.length,bw=Math.max(3,slot*.62);v.forEach((r,i)=>{const hh=r.kwh/max*ih,xx=p.l+i*slot+(slot-bw)/2,yy=p.t+ih-hh;bars+=`<rect x="${xx}" y="${yy}" width="${bw}" height="${hh}" rx="3" fill="#4cc9f0"/>`;const every=v.length>20?5:1;if(i%every===0||i===v.length-1)lab+=`<text x="${p.l+i*slot+slot/2}" y="${H-12}" text-anchor="middle" fill="#8f9baa" font-size="11">${labelFn(r,i)}</text>`});return`<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${g}${lab}${bars}</svg>`}
-function renderDay(){const d=state.day;if(!d)return;const r=rateFor(monthKey(new Date()));$("#chartTitle").textContent="Potenza di oggi";$("#chartMeta").textContent="Campioni ogni 5 minuti";$("#periodTotal").textContent=fmt(d.totalKwh,3)+" kWh";$("#chartHost").className="";$("#chartHost").innerHTML=lineChart(d.points);$("#tableTitle").textContent="Consumo per ora";$("#colPeriod").textContent="Ora";$("#detailBody").innerHTML=d.hourly.map(x=>`<tr><td>${String(x.hour).padStart(2,"0")}:00–${String((x.hour+1)%24).padStart(2,"0")}:00</td><td>${fmt(x.kwh,3)}</td><td>${r===null?"—":money(x.kwh*r)}</td></tr>`).join("");$("#coverageNote").textContent=d.firstAvailable?"Dati disponibili da "+new Date(d.firstAvailable).toLocaleString("it-IT"):""}
-function renderMonth(){const d=state.month;if(!d)return;const now=new Date(),r=rateFor(monthKey(now));$("#chartTitle").textContent="Consumo del mese";$("#chartMeta").textContent=now.toLocaleDateString("it-IT",{month:"long",year:"numeric"});$("#periodTotal").textContent=fmt(d.totalKwh,2)+" kWh";$("#chartHost").className="";$("#chartHost").innerHTML=barChart(d.series,x=>String(Number(x.key.slice(-2))));$("#tableTitle").textContent="Consumo per giorno";$("#colPeriod").textContent="Giorno";$("#detailBody").innerHTML=d.series.map(x=>`<tr><td>${x.key.split("-").reverse().join("/")}</td><td>${fmt(x.kwh,2)}</td><td>${r===null?"—":money(x.kwh*r)}</td></tr>`).join("");$("#coverageNote").textContent="Il totale usa il contatore cumulativo Shelly e solo lo storico già presente in ThingSpeak."}
-function renderYear(){const d=state.year;if(!d)return;$("#chartTitle").textContent="Consumo dell’anno";$("#chartMeta").textContent=String(new Date().getFullYear());$("#periodTotal").textContent=fmt(d.totalKwh,1)+" kWh";$("#chartHost").className="";$("#chartHost").innerHTML=barChart(d.series,x=>["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"][Number(x.key.slice(-2))-1]);$("#tableTitle").textContent="Consumo per mese";$("#colPeriod").textContent="Mese";$("#detailBody").innerHTML=d.series.map(x=>{const r=rateFor(x.key),dt=new Date(Number(x.key.slice(0,4)),Number(x.key.slice(5,7))-1,1);return`<tr><td>${dt.toLocaleDateString("it-IT",{month:"long"})}</td><td>${fmt(x.kwh,2)}</td><td>${r===null?"—":money(x.kwh*r)}</td></tr>`}).join("");const c=d.series.reduce((s,x)=>{const r=rateFor(x.key);return s+(r===null?0:x.kwh*r)},0);$("#coverageNote").textContent="Costo noto: "+money(c)}
-function renderCurrent(){state.tab==="day"?renderDay():state.tab==="month"?renderMonth():renderYear()}
-function saveLocal(){localStorage.setItem("energiaCasaTariffe",JSON.stringify(state.localTariffs))}
-function renderTariffs(){const arr=Object.keys(state.tariffs).sort((a,b)=>b.localeCompare(a));$("#tariffList").innerHTML=arr.length?arr.map(m=>{const local=Object.prototype.hasOwnProperty.call(state.localTariffs,m);return`<div class="tariffrow"><div>${m}<div class="chartmeta">${local?"Questo dispositivo":"tariffe.json"}</div></div><div><b>${fmt(Number(state.tariffs[m]),4)}</b> €/kWh</div><button class="btn" data-del="${m}" ${local?"":"disabled"}>Elimina</button></div>`}).join(""):'<div class="empty" style="height:120px">Nessuna tariffa inserita.</div>';document.querySelectorAll("[data-del]").forEach(b=>{if(!b.disabled)b.onclick=async()=>{delete state.localTariffs[b.dataset.del];saveLocal();await loadTariffs();await refreshAll()}})}
-async function refreshAll(){setStatus("Aggiornamento…");try{await Promise.all([loadLive(),loadDay(),loadMonth()]);if(state.tab==="year")await loadYear();renderCurrent()}catch(e){setStatus(e.message||String(e),false);$("#chartHost").className="empty";$("#chartHost").textContent=e.message||String(e)}}
-document.querySelectorAll(".tab").forEach(b=>b.onclick=async()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.tab=b.dataset.tab;if(state.tab==="year"&&!state.year){$("#chartHost").className="empty";$("#chartHost").innerHTML='<span><span class="spinner"></span>Caricamento anno…</span>';try{await loadYear()}catch(e){setStatus(e.message,false)}}renderCurrent()});
-$("#refreshBtn").onclick=refreshAll;$("#settingsBtn").onclick=()=>{$("#settingsModal").classList.add("show");renderTariffs()};$("#closeSettings").onclick=$("#closeSettings2").onclick=()=>$("#settingsModal").classList.remove("show");
-$("#saveRate").onclick=async()=>{const m=$("#newMonth").value,r=Number($("#newRate").value.replace(",","."));if(!m||!Number.isFinite(r)){alert("Inserisci mese e tariffa.");return}state.localTariffs[m]=r;saveLocal();$("#newRate").value="";await loadTariffs();await refreshAll()};
-$("#exportRates").onclick=()=>{const all={...state.fileTariffs,...state.localTariffs},blob=new Blob([JSON.stringify(all,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="tariffe.json";a.click();URL.revokeObjectURL(a.href)};
-$("#importRates").onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{state.localTariffs=normalize(JSON.parse(await f.text()));saveLocal();await loadTariffs();await refreshAll()}catch{alert("JSON non valido.")}e.target.value=""};
-$("#newMonth").value=monthKey(new Date());
-(async()=>{if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});await loadTariffs();await refreshAll();setInterval(()=>loadLive().catch(()=>{}),60000)})();
-</script>
+  <script>
+    const CHANNEL_ID = "3493335";
+    const DEFAULT_RATE = 0.31;
+    const BASE = `https://api.thingspeak.com/channels/${CHANNEL_ID}`;
+    const TZ = "Europe/Rome";
+    const state = {
+      fileTariffs:{}, localTariffs:{}, tariffs:{},
+      live:null, today:null, month:null, year:null, last7:null, power24h:null, interval24h:null
+    };
+
+    const $ = s => document.querySelector(s);
+    const fmtNum = (n,d=1)=>Number.isFinite(n)?n.toLocaleString('it-IT',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+    const fmtMoney = n => Number.isFinite(n)?n.toLocaleString('it-IT',{style:'currency',currency:'EUR'}):'—';
+    const fmtPower = n => !Number.isFinite(n)?'—':(n>=1000?fmtNum(n/1000,2)+' kW':fmtNum(n,1)+' W');
+    const fmtKwh = (n,d=1)=>Number.isFinite(n)?fmtNum(n,d)+' kWh':'—';
+    const fmtWh = (n,d=0)=>Number.isFinite(n)?fmtNum(n,d)+' Wh':'—';
+
+    function setStatus(text,bad=false){
+      const el=$("#status");
+      el.textContent=text;
+      el.className='status'+(bad?' bad':'');
+    }
+    function tsDateTimeLocal(d){
+      return new Date(d).toLocaleString('it-IT',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    }
+    function tsFormat(date){
+      const pad=n=>String(n).padStart(2,'0');
+      return date.getUTCFullYear()+'-'+pad(date.getUTCMonth()+1)+'-'+pad(date.getUTCDate())+' '+pad(date.getUTCHours())+':'+pad(date.getUTCMinutes())+':'+pad(date.getUTCSeconds());
+    }
+    function monthKeyFromDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+    function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+    function startOfMonth(d){ return new Date(d.getFullYear(),d.getMonth(),1,0,0,0,0); }
+    function startOfYear(d){ return new Date(d.getFullYear(),0,1,0,0,0,0); }
+    function numeric(v){ if(v===null||v===undefined||v==='') return null; const n=Number(v); return Number.isFinite(n)?n:null; }
+
+    function localParts(date){
+      const fmt = new Intl.DateTimeFormat('en-CA',{
+        timeZone: TZ, year:'numeric', month:'2-digit', day:'2-digit',
+        hour:'2-digit', hourCycle:'h23'
+      });
+      const out={};
+      for(const p of fmt.formatToParts(date)){ if(p.type!=='literal') out[p.type]=p.value; }
+      return out;
+    }
+
+    async function tsFetch(path, params={}){
+      const url = new URL(BASE + path);
+      Object.entries(params).forEach(([k,v])=>{
+        if(v!==undefined&&v!==null&&v!=='') url.searchParams.set(k, String(v));
+      });
+      const r = await fetch(url.toString(), {cache:'no-store'});
+      if(!r.ok) throw new Error('ThingSpeak HTTP ' + r.status);
+      const data = await r.json();
+      if(data === -1) throw new Error('Il canale ThingSpeak non è pubblico.');
+      return data;
+    }
+
+    async function fetchField2Range(start,end){
+      const out=[];
+      let cursor = new Date(start);
+      const final = new Date(end);
+      const chunkMs = 14*24*3600*1000;
+      while(cursor < final){
+        const next = new Date(Math.min(cursor.getTime()+chunkMs, final.getTime()));
+        const data = await tsFetch('/fields/2.json',{
+          start: tsFormat(cursor),
+          end: tsFormat(next),
+          results: 8000
+        });
+        if(Array.isArray(data.feeds)) out.push(...data.feeds);
+        cursor = next;
+      }
+      const seen = new Set();
+      return out.filter(f=>{
+        const key = f.entry_id || f.created_at;
+        if(seen.has(key)) return false;
+        seen.add(key); return true;
+      }).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+    }
+
+    function normalizeTariffs(obj){
+      const out={};
+      for(const [k,v] of Object.entries(obj||{})){
+        if(!/^\d{4}-\d{2}$/.test(k)) continue;
+        const n = typeof v === 'object' && v !== null ? Number(v.rate) : Number(v);
+        if(Number.isFinite(n) && n>=0 && n<=10) out[k]=n;
+      }
+      return out;
+    }
+
+    async function loadTariffs(){
+      let fileData={}, localData={};
+      try{
+        const r = await fetch('tariffe.json', {cache:'no-store'});
+        if(r.ok) fileData = await r.json();
+      }catch(e){}
+      try{
+        localData = JSON.parse(localStorage.getItem('energiaCasaTariffe') || '{}');
+      }catch(e){}
+      state.fileTariffs = normalizeTariffs(fileData);
+      state.localTariffs = normalizeTariffs(localData);
+      state.tariffs = {...state.fileTariffs, ...state.localTariffs};
+      renderTariffs();
+    }
+    function saveLocalTariffs(){
+      localStorage.setItem('energiaCasaTariffe', JSON.stringify(state.localTariffs));
+    }
+    function rateForMonth(monthKey){
+      const n = Number(state.tariffs[monthKey]);
+      return Number.isFinite(n) ? n : DEFAULT_RATE;
+    }
+
+    function energyDeltas(feeds, rangeStart, rangeEnd){
+      const rows=[];
+      const startMs = new Date(rangeStart).getTime();
+      const endMs = new Date(rangeEnd).getTime();
+      for(let i=1;i<feeds.length;i++){
+        const prev = numeric(feeds[i-1].field2);
+        const curr = numeric(feeds[i].field2);
+        const t = new Date(feeds[i].created_at);
+        if(prev===null||curr===null||!Number.isFinite(t.getTime())) continue;
+        if(t.getTime() < startMs || t.getTime() >= endMs) continue;
+        const dWh = curr-prev;
+        if(dWh >= 0) rows.push({time:t,kwh:dWh/1000,wh:dWh});
+      }
+      return rows;
+    }
+
+    async function loadLive(){
+      const data = await tsFetch('/feeds.json',{results:2});
+      const feeds = data.feeds || [];
+      const f = feeds[feeds.length-1];
+      if(!f) throw new Error('Nessun dato disponibile.');
+      state.live = {
+        createdAt: f.created_at,
+        powerW: numeric(f.field1),
+        energyWh: numeric(f.field2),
+        currentA: numeric(f.field3),
+        voltageV: numeric(f.field4),
+        pf: numeric(f.field5),
+        frequencyHz: numeric(f.field6),
+        returnedWh: numeric(f.field7)
+      };
+    }
+
+    async function loadTodayAndPower24h(){
+      const now = new Date();
+      const start = startOfDay(now);
+      const fetchStart = new Date(start.getTime() - 10*60*1000);
+      const data = await tsFetch('/feeds.json',{
+        start: tsFormat(fetchStart),
+        end: tsFormat(now),
+        results: 1000
+      });
+      const feeds = (data.feeds||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+      const deltas = energyDeltas(feeds, start, now);
+      const hourly = new Map();
+      deltas.forEach(r=>{
+        const h = Number(localParts(r.time).hour);
+        hourly.set(h, (hourly.get(h)||0) + r.kwh);
+      });
+      state.today = {
+        totalKwh: deltas.reduce((s,r)=>s+r.kwh,0),
+        totalWh: deltas.reduce((s,r)=>s+r.wh,0),
+        points: feeds.map(f=>({t:f.created_at,powerW:numeric(f.field1)})),
+        deltas
+      };
+
+      // last 24h
+      const start24 = new Date(now.getTime()-24*3600*1000);
+      const data24 = await tsFetch('/feeds.json',{
+        start: tsFormat(start24),
+        end: tsFormat(now),
+        results: 3000
+      });
+      const feeds24 = (data24.feeds||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+      const deltas24 = energyDeltas(feeds24, start24, now);
+      state.power24h = feeds24.map(f=>({t:f.created_at,powerW:numeric(f.field1)})).filter(x=>x.powerW!==null);
+      state.interval24h = deltas24;
+    }
+
+    async function loadMonthAndYear(){
+      const now = new Date();
+      const monthStart = startOfMonth(now);
+      const yearStart = startOfYear(now);
+
+      const feedsMonth = await fetchField2Range(new Date(monthStart.getTime()-10*60*1000), now);
+      const deltasMonth = energyDeltas(feedsMonth, monthStart, now);
+      const bucketsDay = new Map();
+      deltasMonth.forEach(r=>{
+        const p = localParts(r.time);
+        const key = `${p.year}-${p.month}-${p.day}`;
+        bucketsDay.set(key, (bucketsDay.get(key)||0)+r.kwh);
+      });
+      state.month = {
+        totalKwh: deltasMonth.reduce((s,r)=>s+r.kwh,0),
+        series: [...bucketsDay.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,kwh])=>({key,kwh}))
+      };
+
+      const feedsYear = await fetchField2Range(new Date(yearStart.getTime()-10*60*1000), now);
+      const deltasYear = energyDeltas(feedsYear, yearStart, now);
+      const bucketsMonth = new Map();
+      deltasYear.forEach(r=>{
+        const p = localParts(r.time);
+        const key = `${p.year}-${p.month}`;
+        bucketsMonth.set(key, (bucketsMonth.get(key)||0)+r.kwh);
+      });
+      state.year = {
+        totalKwh: deltasYear.reduce((s,r)=>s+r.kwh,0),
+        series: [...bucketsMonth.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,kwh])=>({key,kwh}))
+      };
+    }
+
+    async function loadLast7Days(){
+      const now = new Date();
+      const start = new Date(startOfDay(now).getTime() - 6*24*3600*1000);
+      const feeds = await fetchField2Range(new Date(start.getTime()-10*60*1000), now);
+      const deltas = energyDeltas(feeds, start, now);
+      const map = new Map();
+      deltas.forEach(r=>{
+        const p = localParts(r.time);
+        const key = `${p.year}-${p.month}-${p.day}`;
+        map.set(key, (map.get(key)||0) + r.kwh);
+      });
+      const series = [];
+      for(let i=0;i<7;i++){
+        const d = new Date(startOfDay(now).getTime() - (6-i)*24*3600*1000);
+        const key = monthKeyFromDate(d).replace(/^(\d{4}-\d{2})$/, '$1') + '-' + String(d.getDate()).padStart(2,'0');
+        const pkey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const kwh = map.get(pkey) || 0;
+        const rate = rateForMonth(monthKeyFromDate(d));
+        const cost = rate===null ? null : kwh*rate;
+        const label = d.toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'2-digit'});
+        series.push({date:new Date(d),key:pkey,label,kwh,cost});
+      }
+      state.last7 = series;
+    }
+
+    function renderCards(){
+      const now = new Date();
+      const rate = rateForMonth(monthKeyFromDate(now));
+      $("#cardPower").textContent = fmtPower(state.live?.powerW);
+      $("#cardPowerSub").textContent = state.live ? ('Ultimo dato: ' + tsDateTimeLocal(state.live.createdAt)) : 'Potenza attuale';
+      $("#cardHourCost").textContent = (rate!==null && Number.isFinite(state.live?.powerW)) ? fmtMoney((state.live.powerW/1000)*rate) : '—';
+      $("#cardRate").textContent = rate===null ? 'Tariffa non impostata' : ('Tariffa ' + fmtNum(rate,4) + ' €/kWh');
+      $("#cardTodayKwh").textContent = fmtKwh(state.today?.totalKwh,2);
+      $("#cardTodayCost").textContent = rate===null ? 'Tariffa non impostata' : fmtMoney(state.today.totalKwh*rate);
+      $("#cardMonthKwh").textContent = fmtKwh(state.month?.totalKwh,1);
+      $("#cardMonthCost").textContent = rate===null ? 'Tariffa non impostata' : fmtMoney(state.month.totalKwh*rate);
+
+      $("#sumTodayCost").textContent = rate===null ? '—' : fmtMoney(state.today.totalKwh*rate);
+      $("#sumMonthCost").textContent = rate===null ? '—' : fmtMoney(state.month.totalKwh*rate);
+    }
+
+    function tickClock(){
+      const d = new Date();
+      $("#cardClock").textContent = d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      $("#cardDate").textContent = d.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+    }
+
+    function svgLineChart({points, color='#4f8cff', yLabel='W', xTicks=6, showDots=false, titleMode='time'}){
+      const valid = points.filter(p=>Number.isFinite(p.y));
+      if(!valid.length) return '<div class="empty">Nessun dato disponibile.</div>';
+      const W=760,H=265,p={l:44,r:10,t:8,b:28}; const iw=W-p.l-p.r, ih=H-p.t-p.b;
+      const minX = valid[0].x.getTime(), maxX = valid[valid.length-1].x.getTime() || minX+1;
+      const maxY = Math.max(...valid.map(p=>p.y), 1) * 1.08;
+      const x = t => p.l + ((t.getTime()-minX)/(maxX-minX||1))*iw;
+      const y = v => p.t + ih - (v/maxY)*ih;
+      let grid='', labels='', path='';
+      for(let i=0;i<=4;i++){
+        const yy = p.t + ih*i/4;
+        const val = maxY*(1-i/4);
+        grid += `<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="var(--grid)" stroke-width="1"/>`;
+        labels += `<text x="${p.l-6}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="10">${Math.round(val)}</text>`;
+      }
+      for(let i=0;i<=xTicks;i++){
+        const xx = p.l + iw*i/xTicks;
+        const t = new Date(minX + (maxX-minX)*i/xTicks);
+        const txt = titleMode==='date'
+          ? t.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'})
+          : t.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+        labels += `<text x="${xx}" y="${H-8}" text-anchor="middle" fill="var(--muted)" font-size="10">${txt}</text>`;
+      }
+      const poly = valid.map(pt=>`${x(pt.x).toFixed(1)},${y(pt.y).toFixed(1)}`).join(' ');
+      path += `<polyline fill="none" stroke="${color}" stroke-width="2.2" points="${poly}"/>`;
+      if(showDots){
+        path += valid.map(pt=>`<circle cx="${x(pt.x)}" cy="${y(pt.y)}" r="2.3" fill="${color}"/>`).join('');
+      }
+      return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}${labels}${path}</svg>`;
+    }
+
+    function svgBarDualChart({rows,leftKey,rightKey,leftColor,rightColor}){
+      if(!rows.length) return '<div class="empty">Nessun dato disponibile.</div>';
+      const W=760,H=265,p={l:44,r:32,t:12,b:30}; const iw=W-p.l-p.r, ih=H-p.t-p.b;
+      const leftMax = Math.max(...rows.map(r=>Number(r[leftKey]||0)), 0.1) * 1.15;
+      const rightVals = rows.map(r=>r[rightKey]).filter(v=>Number.isFinite(v));
+      const rightMax = Math.max(...(rightVals.length?rightVals:[0.1])) * 1.15;
+      const slot = iw/rows.length; const bw = Math.min(36, slot*0.36);
+      let out='';
+      for(let i=0;i<=4;i++){
+        const yy = p.t + ih*i/4;
+        const lv = leftMax*(1-i/4), rv = rightMax*(1-i/4);
+        out += `<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="var(--grid)"/>`;
+        out += `<text x="${p.l-6}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="10">${fmtNum(lv,0)}</text>`;
+        out += `<text x="${W-p.r+6}" y="${yy+4}" text-anchor="start" fill="var(--muted)" font-size="10">${fmtNum(rv,1)}</text>`;
+      }
+      rows.forEach((r,i)=>{
+        const cx = p.l + i*slot + slot/2;
+        const lhh = (Number(r[leftKey]||0)/leftMax)*ih;
+        const rhh = Number.isFinite(r[rightKey]) ? (r[rightKey]/rightMax)*ih : 0;
+        const x1 = cx - bw - 2;
+        const x2 = cx + 2;
+        out += `<rect x="${x1}" y="${p.t+ih-lhh}" width="${bw}" height="${lhh}" rx="2" fill="${leftColor}"/>`;
+        if(Number.isFinite(r[rightKey])){
+          out += `<rect x="${x2}" y="${p.t+ih-rhh}" width="${bw}" height="${rhh}" rx="2" fill="${rightColor}"/>`;
+          out += `<text x="${x2+bw/2}" y="${p.t+ih-rhh-4}" text-anchor="middle" fill="#dbe5ff" font-size="10">${fmtNum(r[rightKey],2)}</text>`;
+        }
+        out += `<text x="${x1+bw/2}" y="${p.t+ih-lhh-4}" text-anchor="middle" fill="#dbe5ff" font-size="10">${fmtNum(r[leftKey],1)} kWh</text>`;
+        out += `<text x="${cx}" y="${H-8}" text-anchor="middle" fill="var(--muted)" font-size="10">${r.label}</text>`;
+      });
+      return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${out}</svg>`;
+    }
+
+    function svgSummaryChart({todayKwh,todayCost,monthKwh,monthCost}){
+      const rows = [
+        {label:'Oggi', kwh:todayKwh, cost:todayCost},
+        {label:'Mese', kwh:monthKwh, cost:monthCost}
+      ];
+      const W=760,H=265,p={l:44,r:32,t:12,b:30}; const iw=W-p.l-p.r, ih=H-p.t-p.b;
+      const leftMax = Math.max(...rows.map(r=>r.kwh), 0.1)*1.2;
+      const rightMax = Math.max(...rows.map(r=>Number.isFinite(r.cost)?r.cost:0), 0.1)*1.2;
+      let out='';
+      for(let i=0;i<=4;i++){
+        const yy = p.t + ih*i/4;
+        const lv = leftMax*(1-i/4), rv = rightMax*(1-i/4);
+        out += `<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="var(--grid)"/>`;
+        out += `<text x="${p.l-6}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="10">${fmtNum(lv,1)}</text>`;
+        out += `<text x="${W-p.r+6}" y="${yy+4}" text-anchor="start" fill="var(--muted)" font-size="10">${fmtNum(rv,2)}</text>`;
+      }
+      const slot = iw/rows.length, bw = 80;
+      rows.forEach((r,i)=>{
+        const cx = p.l + i*slot + slot/2;
+        const kh = (r.kwh/leftMax)*ih;
+        const ch = Number.isFinite(r.cost)?(r.cost/rightMax)*ih:0;
+        out += `<rect x="${cx-bw-6}" y="${p.t+ih-kh}" width="${bw}" height="${kh}" rx="3" fill="var(--blue)"/>`;
+        out += `<rect x="${cx+6}" y="${p.t+ih-ch}" width="${bw}" height="${ch}" rx="3" fill="var(--green)"/>`;
+        out += `<text x="${cx-bw/2-6}" y="${p.t+ih-kh-5}" text-anchor="middle" fill="#dbe5ff" font-size="10">${fmtNum(r.kwh,2)} kWh</text>`;
+        if(Number.isFinite(r.cost)) out += `<text x="${cx+bw/2+6}" y="${p.t+ih-ch-5}" text-anchor="middle" fill="#dbe5ff" font-size="10">${fmtNum(r.cost,2)} €</text>`;
+        out += `<text x="${cx}" y="${H-8}" text-anchor="middle" fill="var(--muted)" font-size="11">${r.label}</text>`;
+      });
+      return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${out}</svg>`;
+    }
+
+    function renderCharts(){
+      // last 7 days
+      $("#meta7d").textContent = state.last7 ? ('Tot.: ' + fmtKwh(state.last7.reduce((s,r)=>s+r.kwh,0),1)) : '—';
+      $("#chart7dWrap").innerHTML = svgBarDualChart({
+        rows: state.last7 || [],
+        leftKey: 'kwh',
+        rightKey: 'cost',
+        leftColor: 'var(--green)',
+        rightColor: 'var(--blue)'
+      });
+
+      const now = new Date();
+      const rate = rateForMonth(monthKeyFromDate(now));
+      $("#chartSummaryWrap").innerHTML = svgSummaryChart({
+        todayKwh: state.today?.totalKwh || 0,
+        todayCost: rate===null ? null : (state.today.totalKwh*rate),
+        monthKwh: state.month?.totalKwh || 0,
+        monthCost: rate===null ? null : (state.month.totalKwh*rate)
+      });
+
+      $("#metaPower24h").textContent = state.power24h?.length ? ('Casa: ' + fmtPower(state.power24h[state.power24h.length-1].powerW)) : '—';
+      $("#chartPowerWrap").innerHTML = svgLineChart({
+        points:(state.power24h||[]).map(p=>({x:new Date(p.t), y:p.powerW})),
+        color:'var(--blue)', yLabel:'W', xTicks:6, showDots:false, titleMode:'time'
+      });
+
+      $("#metaIntervals").textContent = state.interval24h?.length ? ('Casa: ' + fmtWh(state.interval24h[state.interval24h.length-1].wh,0)) : '—';
+      $("#chartIntervalsWrap").innerHTML = svgLineChart({
+        points:(state.interval24h||[]).map(p=>({x:new Date(p.time), y:p.wh})),
+        color:'var(--green)', yLabel:'Wh', xTicks:6, showDots:false, titleMode:'time'
+      });
+
+      $("#footLastPoint").textContent = state.live ? ('Ultimo dato: ' + tsDateTimeLocal(state.live.createdAt)) : 'Ultimo dato: —';
+      if(state.interval24h?.length){
+        const first = state.interval24h[0].time;
+        const last = state.interval24h[state.interval24h.length-1].time;
+        $("#footIntervalRange").textContent = 'Casa: ' + fmtWh(state.interval24h.reduce((s,r)=>s+r.wh,0),0) + ' • ' +
+          new Date(first).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) + ' - ' +
+          new Date(last).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+      }else{
+        $("#footIntervalRange").textContent = 'Intervallo: —';
+      }
+    }
+
+    function renderTariffs(){
+      const entries = Object.keys(state.tariffs).sort((a,b)=>b.localeCompare(a));
+      $("#tariffList").innerHTML = entries.length ? entries.map(month=>{
+        const local = Object.prototype.hasOwnProperty.call(state.localTariffs, month);
+        return `<div class="tariffrow">
+          <div><b>${month}</b><div class="helper">${local?'Questo dispositivo':'tariffe.json'}</div></div>
+          <div>${fmtNum(Number(state.tariffs[month]),4)} €/kWh</div>
+          <button class="btn" data-del="${month}" ${local?'':'disabled'}>Elimina</button>
+        </div>`;
+      }).join('') : '<div class="empty" style="height:120px">Nessuna tariffa impostata.</div>';
+      document.querySelectorAll('[data-del]').forEach(btn=>{
+        if(btn.disabled) return;
+        btn.onclick = async ()=>{
+          delete state.localTariffs[btn.dataset.del];
+          saveLocalTariffs();
+          await loadTariffs();
+          await refreshAll();
+        };
+      });
+    }
+
+    async function refreshAll(){
+      setStatus('Aggiornamento…');
+      try{
+        await loadTariffs();
+        await loadLive();
+        await loadTodayAndPower24h();
+        await loadMonthAndYear();
+        await loadLast7Days();
+        renderCards();
+        renderCharts();
+        setStatus(state.live ? ('Online • ultimo dato ' + tsDateTimeLocal(state.live.createdAt)) : 'Online');
+      }catch(err){
+        console.error(err);
+        setStatus(err.message || String(err), true);
+      }
+    }
+
+    $("#refreshBtn").onclick = refreshAll;
+    $("#tariffeBtn").onclick = ()=>$("#tariffeModal").classList.add('show');
+    $("#closeTariffe").onclick = ()=>$("#tariffeModal").classList.remove('show');
+    $("#saveRate").onclick = async ()=>{
+      const month = $("#newMonth").value;
+      const rate = Number(($("#newRate").value || '').replace(',','.'));
+      if(!month || !Number.isFinite(rate)){ alert('Inserisci mese e tariffa.'); return; }
+      state.localTariffs[month] = rate;
+      saveLocalTariffs();
+      $("#newRate").value = '';
+      await loadTariffs();
+      await refreshAll();
+    };
+    $("#newMonth").value = monthKeyFromDate(new Date());
+
+    tickClock();
+    setInterval(tickClock, 1000);
+    refreshAll();
+    setInterval(()=>loadLive().then(()=>{renderCards(); setStatus('Online • ultimo dato ' + tsDateTimeLocal(state.live.createdAt));}).catch(()=>{}), 60000);
+  </script>
 </body>
 </html>
