@@ -228,14 +228,40 @@ function sumKwh(feeds){return deltaPoints(feeds).reduce((s,p)=>s+p.y,0)/1000}
 
 function chartLayout(ytitle,extra={}){
   const mobile=innerWidth<=650;
+  const tickFormat=(currentRange==="1h"||currentRange==="3h"||currentRange==="6h"||currentRange==="12h"||currentRange==="1d")
+    ? "%H:%M"
+    : "%d/%m";
   return Object.assign({
-    margin:mobile?{l:40,r:8,t:10,b:24}:{l:55,r:10,t:10,b:28},
-    paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
+    margin:mobile?{l:42,r:8,t:14,b:30}:{l:55,r:12,t:14,b:34},
+    paper_bgcolor:"rgba(0,0,0,0)",
+    plot_bgcolor:"rgba(0,0,0,0)",
     font:{color:"#fff",size:mobile?9:11},
-    xaxis:{showgrid:true,gridcolor:"#555b69",tickfont:{color:"#fff"},linecolor:"#fff"},
-    yaxis:{showgrid:true,gridcolor:"#555b69",tickfont:{color:"#fff"},linecolor:"#fff",title:{text:ytitle,font:{color:"#fff"}}},
-    legend:{orientation:"h",y:1.15},
-    hovermode:"x unified"
+    showlegend:false,
+    hovermode:"closest",
+    hoverlabel:{
+      bgcolor:"#111827",
+      bordercolor:"#3b4558",
+      font:{color:"#ffffff"}
+    },
+    xaxis:{
+      showgrid:true,
+      gridcolor:"#555b69",
+      tickfont:{color:"#fff"},
+      linecolor:"#fff",
+      tickformat:tickFormat,
+      hoverformat:"%d/%m/%Y %H:%M",
+      rangeslider:{visible:false},
+      showspikes:false,
+      zeroline:false
+    },
+    yaxis:{
+      showgrid:true,
+      gridcolor:"#555b69",
+      tickfont:{color:"#fff"},
+      linecolor:"#fff",
+      zeroline:false,
+      title:{text:ytitle,font:{color:"#fff"}}
+    }
   },extra);
 }
 
@@ -251,49 +277,209 @@ function minmax(pts){
 
 function renderPower(feeds){
   const pts=powerPoints(feeds),mm=minmax(pts);
-  const trace={x:pts.map(p=>p.x),y:pts.map(p=>p.y),mode:"lines",name:"Casa",line:{width:2,color:"#3d7cff"}};
-  Plotly.newPlot("chart-power",[trace,...(mm?mm.traces:[])],chartLayout("W"),{displayModeBar:false,responsive:true});
+  const ymax=mm ? Math.max(250,mm.max*1.16) : 500;
+
+  const trace={
+    x:pts.map(p=>p.x),
+    y:pts.map(p=>p.y),
+    mode:"lines",
+    name:"Casa",
+    showlegend:false,
+    line:{width:2,color:"#3d7cff"},
+    hovertemplate:"%{x|%d/%m/%Y %H:%M}<br>%{y:.1f} W<extra></extra>"
+  };
+
+  Plotly.newPlot(
+    "chart-power",
+    [trace,...(mm?mm.traces.map(t=>({...t,showlegend:false})):[])],
+    chartLayout("W",{
+      yaxis:{
+        showgrid:true,
+        gridcolor:"#555b69",
+        tickfont:{color:"#fff"},
+        linecolor:"#fff",
+        range:[0,ymax],
+        zeroline:false,
+        title:{text:"W",font:{color:"#fff"}}
+      }
+    }),
+    {displayModeBar:false,responsive:true}
+  );
+
   $("#power-minmax").textContent=mm?`Casa: ${mm.min.toFixed(0)}-${mm.max.toFixed(0)} W`:"—";
 }
 
 function renderEnergy(feeds){
   const pts=deltaPoints(feeds),mm=minmax(pts);
-  const trace={x:pts.map(p=>p.x),y:pts.map(p=>p.y),mode:"lines",name:"Casa",line:{width:2,color:"#66ff99"}};
-  Plotly.newPlot("chart-energy",[trace,...(mm?mm.traces:[])],chartLayout("Wh"),{displayModeBar:false,responsive:true});
+  const ymax=mm ? Math.max(20,mm.max*1.16) : 100;
+
+  const trace={
+    x:pts.map(p=>p.x),
+    y:pts.map(p=>p.y),
+    mode:"lines",
+    name:"Casa",
+    showlegend:false,
+    line:{width:2,color:"#66ff99"},
+    hovertemplate:"%{x|%d/%m/%Y %H:%M}<br>%{y:.1f} Wh<extra></extra>"
+  };
+
+  Plotly.newPlot(
+    "chart-energy",
+    [trace,...(mm?mm.traces.map(t=>({...t,showlegend:false,marker:{...t.marker,color:"#3d7cff"}})):[])],
+    chartLayout("Wh",{
+      yaxis:{
+        showgrid:true,
+        gridcolor:"#555b69",
+        tickfont:{color:"#fff"},
+        linecolor:"#fff",
+        range:[0,ymax],
+        zeroline:false,
+        title:{text:"Wh",font:{color:"#fff"}}
+      }
+    }),
+    {displayModeBar:false,responsive:true}
+  );
+
   $("#energy-minmax").textContent=mm?`Casa: ${mm.min.toFixed(1)}-${mm.max.toFixed(1)} Wh`:"—";
 }
 
 function renderWeekly(all){
-  const now=new Date(),start=new Date(now);start.setDate(start.getDate()-6);start.setHours(0,0,0,0);
+  const now=new Date();
+  const start=new Date(now);
+  start.setDate(start.getDate()-6);
+  start.setHours(0,0,0,0);
+
   const feeds=all.filter(f=>f.time>=start&&f.time<=now);
   const map=new Map();
   const dp=deltaPoints(feeds);
+
   for(const p of dp){
     const key=p.x.getFullYear()+"-"+String(p.x.getMonth()+1).padStart(2,"0")+"-"+String(p.x.getDate()).padStart(2,"0");
-    if(!map.has(key))map.set(key,{date:new Date(p.x.getFullYear(),p.x.getMonth(),p.x.getDate()),wh:0});
+    if(!map.has(key)){
+      map.set(key,{
+        date:new Date(p.x.getFullYear(),p.x.getMonth(),p.x.getDate()),
+        wh:0
+      });
+    }
     map.get(key).wh+=p.y;
   }
-  const arr=[...map.values()].sort((a,b)=>a.date-b.date);
-  const labels=arr.map(r=>fmtDay(r.date)),kwh=arr.map(r=>r.wh/1000),cost=arr.map((r,i)=>kwh[i]*rateFor(r.date));
-  const t1={x:labels,y:kwh,type:"bar",name:"Casa",marker:{color:"#66ff99"},text:kwh.map(v=>v.toFixed(1)+" kWh"),textposition:"outside"};
-  const t2={x:labels,y:cost,type:"bar",name:"Costo (€)",yaxis:"y2",marker:{color:"#3d7cff"},text:cost.map(v=>v.toFixed(2)+" €"),textposition:"outside"};
-  const lay=chartLayout("kWh",{barmode:"group",yaxis2:{overlaying:"y",side:"right",showgrid:false,rangemode:"tozero",title:{text:"€",font:{color:"#fff"}},tickfont:{color:"#fff"}},margin:innerWidth<=650?{l:40,r:40,t:50,b:25}:{l:55,r:55,t:25,b:25}});
-  lay.yaxis.rangemode="tozero";
-  Plotly.newPlot("chart-weekly",[t1,t2],lay,{displayModeBar:false,responsive:true});
-  $("#weekly-total").textContent=arr.length?`tot: ${kwh.reduce((a,b)=>a+b,0).toFixed(1)} kWh | ${cost.reduce((a,b)=>a+b,0).toFixed(2)} €`:"—";
+
+  // Crea sempre 7 giorni, anche se alcuni non hanno dati.
+  const rows=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(start);
+    d.setDate(start.getDate()+i);
+    const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    const item=map.get(key);
+    const kwh=item ? item.wh/1000 : 0;
+    const cost=kwh*rateFor(d);
+    rows.push({date:d,label:fmtDay(d),kwh,cost});
+  }
+
+  const W=820,H=265;
+  const p={l:54,r:48,t:24,b:34};
+  const iw=W-p.l-p.r,ih=H-p.t-p.b;
+  const maxKwh=Math.max(0.5,...rows.map(r=>r.kwh))*1.18;
+  const maxCost=Math.max(0.10,...rows.map(r=>r.cost))*1.18;
+  const slot=iw/rows.length;
+  const bw=Math.min(30,slot*0.28);
+
+  let svg="";
+  for(let i=0;i<=4;i++){
+    const y=p.t+ih*i/4;
+    const kv=maxKwh*(1-i/4);
+    const cv=maxCost*(1-i/4);
+    svg+=`<line x1="${p.l}" y1="${y}" x2="${W-p.r}" y2="${y}" stroke="#555b69" stroke-width="1"/>`;
+    svg+=`<text x="${p.l-7}" y="${y+4}" text-anchor="end" fill="#ffffff" font-size="10">${kv.toFixed(1)}</text>`;
+    svg+=`<text x="${W-p.r+7}" y="${y+4}" text-anchor="start" fill="#ffffff" font-size="10">${cv.toFixed(2)}</text>`;
+  }
+
+  rows.forEach((r,i)=>{
+    const cx=p.l+i*slot+slot/2;
+    const hk=(r.kwh/maxKwh)*ih;
+    const hc=(r.cost/maxCost)*ih;
+    const xk=cx-bw-3;
+    const xc=cx+3;
+    const yk=p.t+ih-hk;
+    const yc=p.t+ih-hc;
+
+    svg+=`<rect x="${xk}" y="${yk}" width="${bw}" height="${hk}" rx="2" fill="#66ff99"/>`;
+    svg+=`<rect x="${xc}" y="${yc}" width="${bw}" height="${hc}" rx="2" fill="#3d7cff"/>`;
+
+    if(r.kwh>0){
+      svg+=`<text x="${xk+bw/2}" y="${Math.max(12,yk-5)}" text-anchor="middle" fill="#ffffff" font-size="9">${r.kwh.toFixed(1)} kWh</text>`;
+    }
+    if(r.cost>0){
+      svg+=`<text x="${xc+bw/2}" y="${Math.max(12,yc-5)}" text-anchor="middle" fill="#ffffff" font-size="9">${r.cost.toFixed(2)} €</text>`;
+    }
+
+    svg+=`<text x="${cx}" y="${H-8}" text-anchor="middle" fill="#ffffff" font-size="9">${r.label}</text>`;
+  });
+
+  svg+=`<text x="14" y="${H/2}" transform="rotate(-90 14 ${H/2})" text-anchor="middle" fill="#ffffff" font-size="10">kWh</text>`;
+  svg+=`<text x="${W-12}" y="${H/2}" transform="rotate(90 ${W-12} ${H/2})" text-anchor="middle" fill="#ffffff" font-size="10">€</text>`;
+
+  $("#chart-weekly").innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="none">${svg}</svg>`;
+
+  const totKwh=rows.reduce((s,r)=>s+r.kwh,0);
+  const totCosto=rows.reduce((s,r)=>s+r.cost,0);
+  $("#weekly-total").textContent=`tot: ${totKwh.toFixed(1)} kWh | ${totCosto.toFixed(2)} €`;
 }
 
 function renderCosts(all){
-  const now=new Date(),today0=new Date(now.getFullYear(),now.getMonth(),now.getDate()),month0=new Date(now.getFullYear(),now.getMonth(),1);
-  const todayFeeds=all.filter(f=>f.time>=today0&&f.time<=now),monthFeeds=all.filter(f=>f.time>=month0&&f.time<=now);
-  const tk=sumKwh(todayFeeds),mk=sumKwh(monthFeeds);
-  const tc=tk*rateFor(now),mc=mk*rateFor(now);
+  const now=new Date();
+  const today0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const month0=new Date(now.getFullYear(),now.getMonth(),1);
+
+  const todayFeeds=all.filter(f=>f.time>=today0&&f.time<=now);
+  const monthFeeds=all.filter(f=>f.time>=month0&&f.time<=now);
+
+  const tk=sumKwh(todayFeeds);
+  const mk=sumKwh(monthFeeds);
+  const tc=tk*rateFor(now);
+  const mc=mk*rateFor(now);
+
   $("#riepilogo-totale-oggi").textContent=money(tc);
   $("#riepilogo-totale-mese").textContent=money(mc);
+
   Plotly.newPlot("chart-costi",[
-    {x:["Casa"],y:[tc],type:"bar",name:"Oggi",marker:{color:"#3d7cff"}},
-    {x:["Casa"],y:[mc],type:"bar",name:"Da inizio mese",marker:{color:"#66aaff"}}
-  ],chartLayout("€",{barmode:"group",margin:{l:40,r:8,t:10,b:28}}),{displayModeBar:false,responsive:true});
+    {
+      x:["Oggi"],
+      y:[tc],
+      type:"bar",
+      name:"Oggi",
+      showlegend:false,
+      marker:{color:"#3d7cff"},
+      text:[money(tc)],
+      textposition:"outside",
+      cliponaxis:false
+    },
+    {
+      x:["Da inizio mese"],
+      y:[mc],
+      type:"bar",
+      name:"Da inizio mese",
+      showlegend:false,
+      marker:{color:"#66aaff"},
+      text:[money(mc)],
+      textposition:"outside",
+      cliponaxis:false
+    }
+  ],chartLayout("€",{
+    barmode:"group",
+    bargap:0.45,
+    margin:{l:45,r:12,t:24,b:34},
+    yaxis:{
+      showgrid:true,
+      gridcolor:"#555b69",
+      tickfont:{color:"#fff"},
+      linecolor:"#fff",
+      rangemode:"tozero",
+      range:[0,Math.max(0.25,mc*1.20)],
+      title:{text:"€",font:{color:"#fff"}}
+    }
+  }),{displayModeBar:false,responsive:true});
+
   $("#stat-today-kwh").textContent=tk.toFixed(2)+" kWh";
   $("#stat-today-cost").textContent=money(tc);
   $("#stat-month-kwh").textContent=mk.toFixed(1)+" kWh";
