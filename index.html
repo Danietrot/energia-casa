@@ -1,696 +1,363 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#111827">
-  <title>Energia Casa</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <style>
-    :root{
-      --bg:#0b1220;
-      --panel:#171f2f;
-      --panel2:#1b2435;
-      --panel3:#111827;
-      --border:#2d3748;
-      --grid:#39455a;
-      --text:#f5f7fb;
-      --muted:#a8b3c7;
-      --blue:#4f8cff;
-      --blue2:#6faeff;
-      --green:#63e891;
-      --orange:#ffb15a;
-      --shadow:0 12px 28px rgba(0,0,0,.28);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;background:#060b14;color:var(--text);
-      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-    }
-    .wrap{max-width:1600px;margin:0 auto;padding:6px}
-    .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-    .brand{display:flex;align-items:center;gap:10px}
-    .logo{
-      width:44px;height:44px;border-radius:12px;background:linear-gradient(180deg,#0f1725,#0b1220);
-      display:grid;place-items:center;border:1px solid var(--border)
-    }
-    .brand h1{margin:0;font-size:18px;line-height:1.1}
-    .status{font-size:12px;color:var(--muted);margin-top:3px}
-    .status.bad{color:#ff8b8b}
-    .actions{display:flex;gap:8px}
-    .btn{
-      border:1px solid var(--border);background:var(--panel3);color:var(--text);
-      border-radius:12px;padding:10px 14px;cursor:pointer;font:inherit
-    }
-    .grid-top{
-      display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:6px
-    }
-    .stat{
-      background:linear-gradient(180deg,#1b2130,#171f2e);border:1px solid #30384b;
-      border-radius:8px;padding:8px 10px;min-height:64px;box-shadow:var(--shadow)
-    }
-    .stat .label{font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:#d6deef;opacity:.95}
-    .stat .value{font-size:31px;font-weight:800;line-height:1.1;margin-top:3px}
-    .stat .sub{font-size:12px;color:var(--muted);margin-top:4px}
-    .grid-main{
-      display:grid;grid-template-columns:1fr 1fr;gap:6px
-    }
-    .panel{
-      background:linear-gradient(180deg,#1a2130,#171f2d);border:1px solid #30384b;
-      border-radius:8px;padding:8px 10px;box-shadow:var(--shadow);min-height:335px;position:relative
-    }
-    .panel h2{
-      margin:0 0 8px 0;font-size:11px;text-transform:uppercase;color:#dce5f7;letter-spacing:.05em
-    }
-    .meta{
-      position:absolute;top:8px;right:10px;font-size:10px;color:var(--muted)
-    }
-    .chart-wrap{height:265px}
-    .chart{width:100%;height:100%}
-    .summary-head{display:flex;justify-content:space-around;gap:20px;margin:4px 0 10px 0;text-align:center}
-    .summary-num .big{font-size:31px;font-weight:800;color:var(--blue)}
-    .summary-num .cap{font-size:11px;color:var(--muted);text-transform:uppercase}
-    .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;font-size:11px;color:#dbe4f8}
-    .legend span{display:inline-flex;align-items:center;gap:6px}
-    .dot{display:inline-block;width:10px;height:10px;border-radius:2px}
-    .foot{
-      display:flex;justify-content:space-between;align-items:center;gap:10px;
-      margin-top:6px;color:var(--muted);font-size:10px
-    }
-    .timebuttons{display:flex;gap:6px;justify-content:center}
-    .timebuttons .pill{
-      border:1px solid var(--border);padding:2px 8px;border-radius:999px;background:#0f1726;color:#cfd8eb;font-size:10px
-    }
-    .timebuttons .pill.active{background:var(--blue);color:white;border-color:transparent}
-    .empty{display:grid;place-items:center;height:240px;color:var(--muted);text-align:center}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
-    .modal.show{display:flex}
-    .modalbox{
-      width:min(620px,100%);background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px
-    }
-    .modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-    .modalhead h3{margin:0;font-size:18px}
-    .x{background:transparent;border:0;color:var(--muted);font-size:24px;cursor:pointer}
-    .notice{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px}
-    .formrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:10px}
-    input{width:100%;background:#0e1625;border:1px solid var(--border);border-radius:10px;padding:10px 11px;color:var(--text);font:inherit}
-    .tariffrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
-    .helper{font-size:11px;color:var(--muted)}
-    code{background:#101827;padding:2px 6px;border-radius:6px}
-    @media (max-width:1100px){
-      .grid-top{grid-template-columns:repeat(2,1fr)}
-      .grid-main{grid-template-columns:1fr}
-    }
-    @media (max-width:560px){
-      .wrap{padding:4px}
-      .grid-top{grid-template-columns:1fr}
-      .stat .value{font-size:28px}
-      .formrow{grid-template-columns:1fr}
-      .summary-head{gap:8px}
-      .summary-num .big{font-size:24px}
-      .actions .btn span{display:none}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171a24">
+<title>Energia Casa</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{
+  --bg:#0d1016;--panel:#252935;--panel2:#1d212b;--border:#353b4b;
+  --text:#f5f7fb;--muted:#a9b1c2;--blue:#3d7cff;--green:#66ff99;
+  --grid:#555b69;--danger:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#080a0f;color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.app{padding:6px;max-width:1800px;margin:auto}
+.topcards{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:6px}
+.stat{background:linear-gradient(180deg,#292d3a,#242834);border:1px solid var(--border);border-radius:7px;padding:7px 10px;min-height:62px}
+.stat .lab{font-size:10px;color:#d8dfef;text-transform:uppercase;letter-spacing:.04em}
+.stat .val{font-size:26px;font-weight:800;margin-top:4px;line-height:1}
+.stat .sub{font-size:10px;color:var(--muted);margin-top:7px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.panel{position:relative;background:linear-gradient(180deg,#242833,#20242f);border:1px solid var(--border);border-radius:7px;padding:7px 9px;min-height:330px}
+.panel h2{font-size:10px;margin:0 0 8px;text-transform:uppercase;letter-spacing:.04em}
+.meta{position:absolute;top:7px;right:9px;font-size:9px;color:var(--muted)}
+.chart{height:270px}
+.legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:10px;color:#e8edf7;margin:0 0 5px}
+.sw{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px}
+.summary{display:flex;justify-content:space-around;gap:24px;text-align:center;margin:2px 0 5px}
+.summary .big{font-size:27px;font-weight:800;color:#67a0ff}.summary .cap{font-size:9px;color:var(--muted);text-transform:uppercase}
+.footer{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:9px;margin-top:5px}
+.rangebar{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+.rangebar button{font:inherit;font-size:9px;color:#dbe5f5;background:#141924;border:1px solid #343c4d;border-radius:999px;padding:2px 7px;cursor:pointer}
+.rangebar button.active{background:var(--blue);color:white;border-color:var(--blue)}
+.statusbar{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:9px;padding:7px 4px 2px}
+.actions{display:flex;gap:5px}
+.btn{background:#151a24;color:white;border:1px solid #353d4c;border-radius:8px;padding:7px 10px;cursor:pointer;font:inherit}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;padding:14px;z-index:50}.modal.show{display:flex}
+.modalbox{width:min(620px,100%);max-height:88vh;overflow:auto;background:#1b202b;border:1px solid #394152;border-radius:14px;padding:16px}
+.modalhead{display:flex;justify-content:space-between;align-items:center}.modalhead h3{margin:0}.x{font-size:23px;background:transparent;border:0;color:var(--muted);cursor:pointer}
+.form{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin:14px 0}.form input{background:#10151f;border:1px solid #353d4d;color:white;border-radius:8px;padding:9px}
+.tarow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;padding:9px 0;border-bottom:1px solid #343a49;align-items:center}
+.help{font-size:11px;color:var(--muted);line-height:1.45}.bad{color:var(--danger)}
+@media(max-width:900px){.topcards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:520px){.app{padding:4px}.topcards{grid-template-columns:1fr 1fr}.stat .val{font-size:22px}.chart{height:250px}.form{grid-template-columns:1fr}.panel{min-height:310px}}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="toolbar">
-      <div class="brand">
-        <div class="logo"><img src="icon.svg" width="28" height="28" alt=""></div>
-        <div>
-          <h1>Energia Casa</h1>
-          <div id="status" class="status">Connessione…</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button id="refreshBtn" class="btn">↻ <span>Aggiorna</span></button>
-        <button id="tariffeBtn" class="btn">⚙ <span>Tariffe</span></button>
-      </div>
-    </div>
+<div class="app">
 
-    <div class="grid-top">
-      <div class="stat">
-        <div class="label">Casa</div>
-        <div class="value" id="cardPower">—</div>
-        <div class="sub" id="cardPowerSub">Potenza attuale</div>
-      </div>
-      <div class="stat">
-        <div class="label">Costo ora (stima)</div>
-        <div class="value" id="cardHourCost">—</div>
-        <div class="sub" id="cardRate">Tariffa non impostata</div>
-      </div>
-      <div class="stat">
-        <div class="label">Ora locale</div>
-        <div class="value" id="cardClock">--:--:--</div>
-        <div class="sub" id="cardDate">—</div>
-      </div>
-      <div class="stat">
-        <div class="label">Oggi</div>
-        <div class="value" id="cardTodayKwh">—</div>
-        <div class="sub" id="cardTodayCost">—</div>
-      </div>
-      <div class="stat">
-        <div class="label">Da inizio mese</div>
-        <div class="value" id="cardMonthKwh">—</div>
-        <div class="sub" id="cardMonthCost">—</div>
-      </div>
-    </div>
-
-    <div class="grid-main">
-      <div class="panel">
-        <h2>Consumi ultimi 7 giorni</h2>
-        <div class="legend">
-          <span><i class="dot" style="background:var(--green)"></i>Casa (kWh)</span>
-          <span><i class="dot" style="background:var(--blue)"></i>Costo (€)</span>
-        </div>
-        <div class="meta" id="meta7d">—</div>
-        <div class="chart-wrap" id="chart7dWrap"><div class="empty">Caricamento…</div></div>
-      </div>
-
-      <div class="panel">
-        <h2>Riepilogo costi (stima)</h2>
-        <div class="summary-head">
-          <div class="summary-num">
-            <div class="big" id="sumTodayCost">—</div>
-            <div class="cap">Oggi</div>
-          </div>
-          <div class="summary-num">
-            <div class="big" id="sumMonthCost">—</div>
-            <div class="cap">Da inizio mese</div>
-          </div>
-        </div>
-        <div class="legend">
-          <span><i class="dot" style="background:var(--blue)"></i>Consumo (kWh)</span>
-          <span><i class="dot" style="background:var(--green)"></i>Costo (€)</span>
-        </div>
-        <div class="chart-wrap" id="chartSummaryWrap"><div class="empty">Caricamento…</div></div>
-        <div class="foot"><span>Stima indicativa, non sostituisce la bolletta.</span></div>
-      </div>
-
-      <div class="panel">
-        <h2>Potenza istantanea</h2>
-        <div class="legend">
-          <span><i class="dot" style="background:var(--blue)"></i>Casa</span>
-        </div>
-        <div class="meta" id="metaPower24h">—</div>
-        <div class="chart-wrap" id="chartPowerWrap"><div class="empty">Caricamento…</div></div>
-        <div class="foot">
-          <span id="footLastPoint">Ultimo dato: —</span>
-          <div class="timebuttons">
-            <span class="pill">1h</span><span class="pill">3h</span><span class="pill">6h</span>
-            <span class="pill">12h</span><span class="pill active">1d</span><span class="pill">7d</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>Consumo per intervallo</h2>
-        <div class="legend">
-          <span><i class="dot" style="background:var(--green)"></i>Casa</span>
-        </div>
-        <div class="meta" id="metaIntervals">—</div>
-        <div class="chart-wrap" id="chartIntervalsWrap"><div class="empty">Caricamento…</div></div>
-        <div class="foot"><span id="footIntervalRange">Intervallo: —</span></div>
-      </div>
-    </div>
+  <div class="topcards">
+    <div class="stat"><div class="lab">Casa</div><div class="val" id="stat-casa-w">—</div><div class="sub">Potenza istantanea</div></div>
+    <div class="stat"><div class="lab">Costo ora</div><div class="val" id="stat-cost-hour">—</div><div class="sub" id="stat-rate">0,31 €/kWh</div></div>
+    <div class="stat"><div class="lab">Ora locale</div><div class="val" id="clock-time">--:--:--</div><div class="sub" id="clock-date">—</div></div>
+    <div class="stat"><div class="lab">Oggi</div><div class="val" id="stat-today-kwh">—</div><div class="sub" id="stat-today-cost">—</div></div>
+    <div class="stat"><div class="lab">Da inizio mese</div><div class="val" id="stat-month-kwh">—</div><div class="sub" id="stat-month-cost">—</div></div>
   </div>
 
-  <div class="modal" id="tariffeModal">
-    <div class="modalbox">
-      <div class="modalhead">
-        <h3>Tariffe energia</h3>
-        <button class="x" id="closeTariffe">×</button>
+  <div class="grid">
+    <section class="panel">
+      <h2>Consumi ultimi 7 giorni</h2>
+      <div class="legend">
+        <span><i class="sw" style="background:#66ff99"></i>Casa</span>
+        <span><i class="sw" style="background:#3d7cff"></i>Costo (€)</span>
       </div>
-      <div class="notice">
-        Tariffa predefinita: <b>0,31 €/kWh</b> per tutti i mesi. <br>Puoi sovrascrivere il valore mese per mese. <br>
-        Le tariffe salvate qui restano sul dispositivo/browser. <br>
-        Se vuoi tenerle sincronizzate, puoi modificare anche il file <code>tariffe.json</code> nel repository GitHub.
+      <div class="meta" id="weekly-total">—</div>
+      <div id="chart-weekly" class="chart"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Riepilogo costi (stima)</h2>
+      <div class="summary">
+        <div><div class="big" id="riepilogo-totale-oggi">—</div><div class="cap">Oggi</div></div>
+        <div><div class="big" id="riepilogo-totale-mese">—</div><div class="cap">Da inizio mese</div></div>
       </div>
-      <div class="formrow">
-        <input id="newMonth" type="month">
-        <input id="newRate" type="number" min="0" step="0.0001" placeholder="0,2500">
-        <button id="saveRate" class="btn">Salva</button>
+      <div class="legend">
+        <span><i class="sw" style="background:#3d7cff"></i>Oggi</span>
+        <span><i class="sw" style="background:#66aaff"></i>Da inizio mese</span>
       </div>
-      <div id="tariffList"></div>
-      <div class="helper">Suggerimento: usa un coefficiente totale realistico, ad esempio energia + spese variabili che vuoi considerare.</div>
-    </div>
+      <div id="chart-costi" class="chart"></div>
+      <div class="footer"><span>Stima indicativa basata sulla tariffa €/kWh impostata.</span></div>
+    </section>
+
+    <section class="panel">
+      <h2>Potenza istantanea</h2>
+      <div class="legend"><span><i class="sw" style="background:#3d7cff"></i>Casa</span></div>
+      <div class="meta" id="power-minmax">—</div>
+      <div id="chart-power" class="chart"></div>
+      <div class="footer">
+        <span id="stat-last-ts">—</span>
+        <div class="rangebar">
+          <button class="btn-range" data-range="1h">1h</button>
+          <button class="btn-range" data-range="3h">3h</button>
+          <button class="btn-range" data-range="6h">6h</button>
+          <button class="btn-range" data-range="12h">12h</button>
+          <button class="btn-range active" data-range="1d">1d</button>
+          <button class="btn-range" data-range="1w">1w</button>
+          <button class="btn-range" data-range="1m">1m</button>
+          <button class="btn-range" data-range="1y">1y</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Consumo per intervallo</h2>
+      <div class="legend"><span><i class="sw" style="background:#66ff99"></i>Casa</span></div>
+      <div class="meta" id="energy-minmax">—</div>
+      <div id="chart-energy" class="chart"></div>
+      <div class="footer"><span id="stat-total-points">—</span><span>Campioni ThingSpeak</span></div>
+    </section>
   </div>
 
-  <script>
-    const CHANNEL_ID = "3493335";
-    const DEFAULT_RATE = 0.31;
-    const BASE = `https://api.thingspeak.com/channels/${CHANNEL_ID}`;
-    const TZ = "Europe/Rome";
-    const state = {
-      fileTariffs:{}, localTariffs:{}, tariffs:{},
-      live:null, today:null, month:null, year:null, last7:null, power24h:null, interval24h:null
-    };
+  <div class="statusbar">
+    <span id="status-bar">Avvio…</span>
+    <div class="actions"><button id="btn-refresh" class="btn">↻ Aggiorna</button><button id="btn-tariffe" class="btn">⚙ Tariffe</button></div>
+  </div>
+</div>
 
-    const $ = s => document.querySelector(s);
-    const fmtNum = (n,d=1)=>Number.isFinite(n)?n.toLocaleString('it-IT',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
-    const fmtMoney = n => Number.isFinite(n)?n.toLocaleString('it-IT',{style:'currency',currency:'EUR'}):'—';
-    const fmtPower = n => !Number.isFinite(n)?'—':(n>=1000?fmtNum(n/1000,2)+' kW':fmtNum(n,1)+' W');
-    const fmtKwh = (n,d=1)=>Number.isFinite(n)?fmtNum(n,d)+' kWh':'—';
-    const fmtWh = (n,d=0)=>Number.isFinite(n)?fmtNum(n,d)+' Wh':'—';
+<div class="modal" id="tariffe-modal">
+  <div class="modalbox">
+    <div class="modalhead"><h3>Tariffe mensili</h3><button class="x" id="close-modal">×</button></div>
+    <p class="help">Predefinita: <b>0,31 €/kWh</b>. Puoi sovrascrivere qualsiasi mese. Le modifiche fatte qui restano nel browser di questo dispositivo.</p>
+    <div class="form">
+      <input id="tar-month" type="month">
+      <input id="tar-rate" type="number" min="0" step="0.0001" placeholder="0,3100">
+      <button id="save-rate" class="btn">Salva</button>
+    </div>
+    <div id="tariff-list"></div>
+  </div>
+</div>
 
-    function setStatus(text,bad=false){
-      const el=$("#status");
-      el.textContent=text;
-      el.className='status'+(bad?' bad':'');
-    }
-    function tsDateTimeLocal(d){
-      return new Date(d).toLocaleString('it-IT',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-    }
-    function tsFormat(date){
-      const pad=n=>String(n).padStart(2,'0');
-      return date.getUTCFullYear()+'-'+pad(date.getUTCMonth()+1)+'-'+pad(date.getUTCDate())+' '+pad(date.getUTCHours())+':'+pad(date.getUTCMinutes())+':'+pad(date.getUTCSeconds());
-    }
-    function monthKeyFromDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
-    function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
-    function startOfMonth(d){ return new Date(d.getFullYear(),d.getMonth(),1,0,0,0,0); }
-    function startOfYear(d){ return new Date(d.getFullYear(),0,1,0,0,0,0); }
-    function numeric(v){ if(v===null||v===undefined||v==='') return null; const n=Number(v); return Number.isFinite(n)?n:null; }
+<script>
+const ENERGY_CHANNEL_ID = 3493335;
+const FIELD_POWER = 1;
+const FIELD_TOTAL_WH = 2;
+const DEFAULT_RATE = 0.31;
+const RANGE_HOURS = {"1h":1,"3h":3,"6h":6,"12h":12,"1d":24,"1w":168,"1m":720,"1y":8760};
+let currentRange="1d";
+let tariffs={};
 
-    function localParts(date){
-      const fmt = new Intl.DateTimeFormat('en-CA',{
-        timeZone: TZ, year:'numeric', month:'2-digit', day:'2-digit',
-        hour:'2-digit', hourCycle:'h23'
-      });
-      const out={};
-      for(const p of fmt.formatToParts(date)){ if(p.type!=='literal') out[p.type]=p.value; }
-      return out;
-    }
+const $=s=>document.querySelector(s);
+const fmtTime=d=>d.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+const fmtDT=d=>d.toLocaleString("it-IT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+const fmtDay=d=>d.toLocaleDateString("it-IT",{weekday:"short",day:"2-digit",month:"2-digit"});
+const fmt=n=>Number(n).toLocaleString("it-IT",{minimumFractionDigits:1,maximumFractionDigits:1});
+const money=n=>Number(n).toLocaleString("it-IT",{style:"currency",currency:"EUR"});
+const monthKey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
 
-    async function tsFetch(path, params={}){
-      const url = new URL(BASE + path);
-      Object.entries(params).forEach(([k,v])=>{
-        if(v!==undefined&&v!==null&&v!=='') url.searchParams.set(k, String(v));
-      });
-      const r = await fetch(url.toString(), {cache:'no-store'});
-      if(!r.ok) throw new Error('ThingSpeak HTTP ' + r.status);
-      const data = await r.json();
-      if(data === -1) throw new Error('Il canale ThingSpeak non è pubblico.');
-      return data;
-    }
+function rateFor(d){
+  const key=monthKey(d);
+  return Number.isFinite(Number(tariffs[key]))?Number(tariffs[key]):DEFAULT_RATE;
+}
 
-    async function fetchField2Range(start,end){
-      const out=[];
-      let cursor = new Date(start);
-      const final = new Date(end);
-      const chunkMs = 14*24*3600*1000;
-      while(cursor < final){
-        const next = new Date(Math.min(cursor.getTime()+chunkMs, final.getTime()));
-        const data = await tsFetch('/fields/2.json',{
-          start: tsFormat(cursor),
-          end: tsFormat(next),
-          results: 8000
-        });
-        if(Array.isArray(data.feeds)) out.push(...data.feeds);
-        cursor = next;
-      }
-      const seen = new Set();
-      return out.filter(f=>{
-        const key = f.entry_id || f.created_at;
-        if(seen.has(key)) return false;
-        seen.add(key); return true;
-      }).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-    }
+async function loadTariffs(){
+  let file={};
+  try{
+    const r=await fetch("tariffe.json",{cache:"no-store"});
+    if(r.ok) file=await r.json();
+  }catch{}
+  let local={};
+  try{local=JSON.parse(localStorage.getItem("energiaCasaTariffe")||"{}")}catch{}
+  tariffs={...file,...local};
+  renderTariffs();
+}
 
-    function normalizeTariffs(obj){
-      const out={};
-      for(const [k,v] of Object.entries(obj||{})){
-        if(!/^\d{4}-\d{2}$/.test(k)) continue;
-        const n = typeof v === 'object' && v !== null ? Number(v.rate) : Number(v);
-        if(Number.isFinite(n) && n>=0 && n<=10) out[k]=n;
-      }
-      return out;
-    }
+function saveLocalRate(month,rate){
+  let local={};
+  try{local=JSON.parse(localStorage.getItem("energiaCasaTariffe")||"{}")}catch{}
+  local[month]=rate;
+  localStorage.setItem("energiaCasaTariffe",JSON.stringify(local));
+}
 
-    async function loadTariffs(){
-      let fileData={}, localData={};
-      try{
-        const r = await fetch('tariffe.json', {cache:'no-store'});
-        if(r.ok) fileData = await r.json();
-      }catch(e){}
-      try{
-        localData = JSON.parse(localStorage.getItem('energiaCasaTariffe') || '{}');
-      }catch(e){}
-      state.fileTariffs = normalizeTariffs(fileData);
-      state.localTariffs = normalizeTariffs(localData);
-      state.tariffs = {...state.fileTariffs, ...state.localTariffs};
-      renderTariffs();
-    }
-    function saveLocalTariffs(){
-      localStorage.setItem('energiaCasaTariffe', JSON.stringify(state.localTariffs));
-    }
-    function rateForMonth(monthKey){
-      const n = Number(state.tariffs[monthKey]);
-      return Number.isFinite(n) ? n : DEFAULT_RATE;
-    }
+function deleteLocalRate(month){
+  let local={};
+  try{local=JSON.parse(localStorage.getItem("energiaCasaTariffe")||"{}")}catch{}
+  delete local[month];
+  localStorage.setItem("energiaCasaTariffe",JSON.stringify(local));
+}
 
-    function energyDeltas(feeds, rangeStart, rangeEnd){
-      const rows=[];
-      const startMs = new Date(rangeStart).getTime();
-      const endMs = new Date(rangeEnd).getTime();
-      for(let i=1;i<feeds.length;i++){
-        const prev = numeric(feeds[i-1].field2);
-        const curr = numeric(feeds[i].field2);
-        const t = new Date(feeds[i].created_at);
-        if(prev===null||curr===null||!Number.isFinite(t.getTime())) continue;
-        if(t.getTime() < startMs || t.getTime() >= endMs) continue;
-        const dWh = curr-prev;
-        if(dWh >= 0) rows.push({time:t,kwh:dWh/1000,wh:dWh});
-      }
-      return rows;
-    }
+function renderTariffs(){
+  let local={};
+  try{local=JSON.parse(localStorage.getItem("energiaCasaTariffe")||"{}")}catch{}
+  const months=Object.keys(tariffs).sort().reverse();
+  $("#tariff-list").innerHTML=months.map(m=>{
+    const isLocal=Object.prototype.hasOwnProperty.call(local,m);
+    return `<div class="tarow"><div>${m}</div><div><b>${Number(tariffs[m]).toFixed(4)}</b> €/kWh</div><button class="btn" data-del="${m}" ${isLocal?"":"disabled"}>${isLocal?"Elimina":"Base"}</button></div>`;
+  }).join("");
+  document.querySelectorAll("[data-del]").forEach(b=>{
+    if(!b.disabled)b.onclick=async()=>{deleteLocalRate(b.dataset.del);await loadTariffs();await renderAll();}
+  });
+}
 
-    async function loadLive(){
-      const data = await tsFetch('/feeds.json',{results:2});
-      const feeds = data.feeds || [];
-      const f = feeds[feeds.length-1];
-      if(!f) throw new Error('Nessun dato disponibile.');
-      state.live = {
-        createdAt: f.created_at,
-        powerW: numeric(f.field1),
-        energyWh: numeric(f.field2),
-        currentA: numeric(f.field3),
-        voltageV: numeric(f.field4),
-        pf: numeric(f.field5),
-        frequencyHz: numeric(f.field6),
-        returnedWh: numeric(f.field7)
-      };
-    }
+async function fetchFeeds(maxResults=8000){
+  const u=`https://api.thingspeak.com/channels/${ENERGY_CHANNEL_ID}/feeds.json?results=${maxResults}`;
+  const r=await fetch(u,{cache:"no-store"});
+  if(!r.ok) throw new Error("ThingSpeak HTTP "+r.status);
+  const data=await r.json();
+  if(data===-1) throw new Error("Canale ThingSpeak non pubblico");
+  return (data.feeds||[]).map(f=>({time:new Date(f.created_at),raw:f})).filter(x=>Number.isFinite(x.time.getTime()));
+}
 
-    async function loadTodayAndPower24h(){
-      const now = new Date();
-      const start = startOfDay(now);
-      const fetchStart = new Date(start.getTime() - 10*60*1000);
-      const data = await tsFetch('/feeds.json',{
-        start: tsFormat(fetchStart),
-        end: tsFormat(now),
-        results: 1000
-      });
-      const feeds = (data.feeds||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-      const deltas = energyDeltas(feeds, start, now);
-      const hourly = new Map();
-      deltas.forEach(r=>{
-        const h = Number(localParts(r.time).hour);
-        hourly.set(h, (hourly.get(h)||0) + r.kwh);
-      });
-      state.today = {
-        totalKwh: deltas.reduce((s,r)=>s+r.kwh,0),
-        totalWh: deltas.reduce((s,r)=>s+r.wh,0),
-        points: feeds.map(f=>({t:f.created_at,powerW:numeric(f.field1)})),
-        deltas
-      };
+function filterRange(feeds,hours){
+  const end=new Date();
+  const start=new Date(end.getTime()-hours*3600000);
+  return feeds.filter(f=>f.time>=start&&f.time<=end);
+}
 
-      // last 24h
-      const start24 = new Date(now.getTime()-24*3600*1000);
-      const data24 = await tsFetch('/feeds.json',{
-        start: tsFormat(start24),
-        end: tsFormat(now),
-        results: 3000
-      });
-      const feeds24 = (data24.feeds||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-      const deltas24 = energyDeltas(feeds24, start24, now);
-      state.power24h = feeds24.map(f=>({t:f.created_at,powerW:numeric(f.field1)})).filter(x=>x.powerW!==null);
-      state.interval24h = deltas24;
-    }
+function powerPoints(feeds){
+  return feeds.map(f=>({x:f.time,y:Number(f.raw["field"+FIELD_POWER])})).filter(p=>Number.isFinite(p.y)&&p.y>=-50&&p.y<=20000);
+}
 
-    async function loadMonthAndYear(){
-      const now = new Date();
-      const monthStart = startOfMonth(now);
-      const yearStart = startOfYear(now);
+function deltaPoints(feeds){
+  const out=[];
+  for(let i=1;i<feeds.length;i++){
+    const a=Number(feeds[i-1].raw["field"+FIELD_TOTAL_WH]);
+    const b=Number(feeds[i].raw["field"+FIELD_TOTAL_WH]);
+    if(!Number.isFinite(a)||!Number.isFinite(b))continue;
+    const wh=b-a;
+    if(wh>=0&&wh<=20000)out.push({x:feeds[i].time,y:wh});
+  }
+  return out;
+}
 
-      const feedsMonth = await fetchField2Range(new Date(monthStart.getTime()-10*60*1000), now);
-      const deltasMonth = energyDeltas(feedsMonth, monthStart, now);
-      const bucketsDay = new Map();
-      deltasMonth.forEach(r=>{
-        const p = localParts(r.time);
-        const key = `${p.year}-${p.month}-${p.day}`;
-        bucketsDay.set(key, (bucketsDay.get(key)||0)+r.kwh);
-      });
-      state.month = {
-        totalKwh: deltasMonth.reduce((s,r)=>s+r.kwh,0),
-        series: [...bucketsDay.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,kwh])=>({key,kwh}))
-      };
+function sumKwh(feeds){return deltaPoints(feeds).reduce((s,p)=>s+p.y,0)/1000}
 
-      const feedsYear = await fetchField2Range(new Date(yearStart.getTime()-10*60*1000), now);
-      const deltasYear = energyDeltas(feedsYear, yearStart, now);
-      const bucketsMonth = new Map();
-      deltasYear.forEach(r=>{
-        const p = localParts(r.time);
-        const key = `${p.year}-${p.month}`;
-        bucketsMonth.set(key, (bucketsMonth.get(key)||0)+r.kwh);
-      });
-      state.year = {
-        totalKwh: deltasYear.reduce((s,r)=>s+r.kwh,0),
-        series: [...bucketsMonth.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([key,kwh])=>({key,kwh}))
-      };
-    }
+function chartLayout(ytitle,extra={}){
+  const mobile=innerWidth<=650;
+  return Object.assign({
+    margin:mobile?{l:40,r:8,t:10,b:24}:{l:55,r:10,t:10,b:28},
+    paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
+    font:{color:"#fff",size:mobile?9:11},
+    xaxis:{showgrid:true,gridcolor:"#555b69",tickfont:{color:"#fff"},linecolor:"#fff"},
+    yaxis:{showgrid:true,gridcolor:"#555b69",tickfont:{color:"#fff"},linecolor:"#fff",title:{text:ytitle,font:{color:"#fff"}}},
+    legend:{orientation:"h",y:1.15},
+    hovermode:"x unified"
+  },extra);
+}
 
-    async function loadLast7Days(){
-      const now = new Date();
-      const start = new Date(startOfDay(now).getTime() - 6*24*3600*1000);
-      const feeds = await fetchField2Range(new Date(start.getTime()-10*60*1000), now);
-      const deltas = energyDeltas(feeds, start, now);
-      const map = new Map();
-      deltas.forEach(r=>{
-        const p = localParts(r.time);
-        const key = `${p.year}-${p.month}-${p.day}`;
-        map.set(key, (map.get(key)||0) + r.kwh);
-      });
-      const series = [];
-      for(let i=0;i<7;i++){
-        const d = new Date(startOfDay(now).getTime() - (6-i)*24*3600*1000);
-        const key = monthKeyFromDate(d).replace(/^(\d{4}-\d{2})$/, '$1') + '-' + String(d.getDate()).padStart(2,'0');
-        const pkey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const kwh = map.get(pkey) || 0;
-        const rate = rateForMonth(monthKeyFromDate(d));
-        const cost = rate===null ? null : kwh*rate;
-        const label = d.toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'2-digit'});
-        series.push({date:new Date(d),key:pkey,label,kwh,cost});
-      }
-      state.last7 = series;
-    }
+function minmax(pts){
+  if(!pts.length)return null;
+  const ys=pts.map(p=>p.y),min=Math.min(...ys),max=Math.max(...ys);
+  const pmin=pts.find(p=>p.y===min),pmax=pts.find(p=>p.y===max);
+  return {min,max,traces:[
+    {x:[pmin.x],y:[pmin.y],mode:"markers+text",marker:{size:7,color:"#3d7cff"},text:[min.toFixed(0)],textposition:"bottom center",showlegend:false,hoverinfo:"skip"},
+    {x:[pmax.x],y:[pmax.y],mode:"markers+text",marker:{size:7,color:"#3d7cff"},text:[max.toFixed(0)],textposition:"top center",showlegend:false,hoverinfo:"skip"}
+  ]};
+}
 
-    function renderCards(){
-      const now = new Date();
-      const rate = rateForMonth(monthKeyFromDate(now));
-      $("#cardPower").textContent = fmtPower(state.live?.powerW);
-      $("#cardPowerSub").textContent = state.live ? ('Ultimo dato: ' + tsDateTimeLocal(state.live.createdAt)) : 'Potenza attuale';
-      $("#cardHourCost").textContent = (rate!==null && Number.isFinite(state.live?.powerW)) ? fmtMoney((state.live.powerW/1000)*rate) : '—';
-      $("#cardRate").textContent = rate===null ? 'Tariffa non impostata' : ('Tariffa ' + fmtNum(rate,4) + ' €/kWh');
-      $("#cardTodayKwh").textContent = fmtKwh(state.today?.totalKwh,2);
-      $("#cardTodayCost").textContent = rate===null ? 'Tariffa non impostata' : fmtMoney(state.today.totalKwh*rate);
-      $("#cardMonthKwh").textContent = fmtKwh(state.month?.totalKwh,1);
-      $("#cardMonthCost").textContent = rate===null ? 'Tariffa non impostata' : fmtMoney(state.month.totalKwh*rate);
+function renderPower(feeds){
+  const pts=powerPoints(feeds),mm=minmax(pts);
+  const trace={x:pts.map(p=>p.x),y:pts.map(p=>p.y),mode:"lines",name:"Casa",line:{width:2,color:"#3d7cff"}};
+  Plotly.newPlot("chart-power",[trace,...(mm?mm.traces:[])],chartLayout("W"),{displayModeBar:false,responsive:true});
+  $("#power-minmax").textContent=mm?`Casa: ${mm.min.toFixed(0)}-${mm.max.toFixed(0)} W`:"—";
+}
 
-      $("#sumTodayCost").textContent = rate===null ? '—' : fmtMoney(state.today.totalKwh*rate);
-      $("#sumMonthCost").textContent = rate===null ? '—' : fmtMoney(state.month.totalKwh*rate);
-    }
+function renderEnergy(feeds){
+  const pts=deltaPoints(feeds),mm=minmax(pts);
+  const trace={x:pts.map(p=>p.x),y:pts.map(p=>p.y),mode:"lines",name:"Casa",line:{width:2,color:"#66ff99"}};
+  Plotly.newPlot("chart-energy",[trace,...(mm?mm.traces:[])],chartLayout("Wh"),{displayModeBar:false,responsive:true});
+  $("#energy-minmax").textContent=mm?`Casa: ${mm.min.toFixed(1)}-${mm.max.toFixed(1)} Wh`:"—";
+}
 
-    function tickClock(){
-      const d = new Date();
-      $("#cardClock").textContent = d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-      $("#cardDate").textContent = d.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
-    }
+function renderWeekly(all){
+  const now=new Date(),start=new Date(now);start.setDate(start.getDate()-6);start.setHours(0,0,0,0);
+  const feeds=all.filter(f=>f.time>=start&&f.time<=now);
+  const map=new Map();
+  const dp=deltaPoints(feeds);
+  for(const p of dp){
+    const key=p.x.getFullYear()+"-"+String(p.x.getMonth()+1).padStart(2,"0")+"-"+String(p.x.getDate()).padStart(2,"0");
+    if(!map.has(key))map.set(key,{date:new Date(p.x.getFullYear(),p.x.getMonth(),p.x.getDate()),wh:0});
+    map.get(key).wh+=p.y;
+  }
+  const arr=[...map.values()].sort((a,b)=>a.date-b.date);
+  const labels=arr.map(r=>fmtDay(r.date)),kwh=arr.map(r=>r.wh/1000),cost=arr.map((r,i)=>kwh[i]*rateFor(r.date));
+  const t1={x:labels,y:kwh,type:"bar",name:"Casa",marker:{color:"#66ff99"},text:kwh.map(v=>v.toFixed(1)+" kWh"),textposition:"outside"};
+  const t2={x:labels,y:cost,type:"bar",name:"Costo (€)",yaxis:"y2",marker:{color:"#3d7cff"},text:cost.map(v=>v.toFixed(2)+" €"),textposition:"outside"};
+  const lay=chartLayout("kWh",{barmode:"group",yaxis2:{overlaying:"y",side:"right",showgrid:false,rangemode:"tozero",title:{text:"€",font:{color:"#fff"}},tickfont:{color:"#fff"}},margin:innerWidth<=650?{l:40,r:40,t:50,b:25}:{l:55,r:55,t:25,b:25}});
+  lay.yaxis.rangemode="tozero";
+  Plotly.newPlot("chart-weekly",[t1,t2],lay,{displayModeBar:false,responsive:true});
+  $("#weekly-total").textContent=arr.length?`tot: ${kwh.reduce((a,b)=>a+b,0).toFixed(1)} kWh | ${cost.reduce((a,b)=>a+b,0).toFixed(2)} €`:"—";
+}
 
-    function svgLineChart({points, color='#4f8cff', yLabel='W', xTicks=6, showDots=false, titleMode='time'}){
-      const valid = points.filter(p=>Number.isFinite(p.y));
-      if(!valid.length) return '<div class="empty">Nessun dato disponibile.</div>';
-      const W=760,H=265,p={l:44,r:10,t:8,b:28}; const iw=W-p.l-p.r, ih=H-p.t-p.b;
-      const minX = valid[0].x.getTime(), maxX = valid[valid.length-1].x.getTime() || minX+1;
-      const maxY = Math.max(...valid.map(p=>p.y), 1) * 1.08;
-      const x = t => p.l + ((t.getTime()-minX)/(maxX-minX||1))*iw;
-      const y = v => p.t + ih - (v/maxY)*ih;
-      let grid='', labels='', path='';
-      for(let i=0;i<=4;i++){
-        const yy = p.t + ih*i/4;
-        const val = maxY*(1-i/4);
-        grid += `<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="var(--grid)" stroke-width="1"/>`;
-        labels += `<text x="${p.l-6}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="10">${Math.round(val)}</text>`;
-      }
-      for(let i=0;i<=xTicks;i++){
-        const xx = p.l + iw*i/xTicks;
-        const t = new Date(minX + (maxX-minX)*i/xTicks);
-        const txt = titleMode==='date'
-          ? t.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'})
-          : t.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
-        labels += `<text x="${xx}" y="${H-8}" text-anchor="middle" fill="var(--muted)" font-size="10">${txt}</text>`;
-      }
-      const poly = valid.map(pt=>`${x(pt.x).toFixed(1)},${y(pt.y).toFixed(1)}`).join(' ');
-      path += `<polyline fill="none" stroke="${color}" stroke-width="2.2" points="${poly}"/>`;
-      if(showDots){
-        path += valid.map(pt=>`<circle cx="${x(pt.x)}" cy="${y(pt.y)}" r="2.3" fill="${color}"/>`).join('');
-      }
-      return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}${labels}${path}</svg>`;
-    }
+function renderCosts(all){
+  const now=new Date(),today0=new Date(now.getFullYear(),now.getMonth(),now.getDate()),month0=new Date(now.getFullYear(),now.getMonth(),1);
+  const todayFeeds=all.filter(f=>f.time>=today0&&f.time<=now),monthFeeds=all.filter(f=>f.time>=month0&&f.time<=now);
+  const tk=sumKwh(todayFeeds),mk=sumKwh(monthFeeds);
+  const tc=tk*rateFor(now),mc=mk*rateFor(now);
+  $("#riepilogo-totale-oggi").textContent=money(tc);
+  $("#riepilogo-totale-mese").textContent=money(mc);
+  Plotly.newPlot("chart-costi",[
+    {x:["Casa"],y:[tc],type:"bar",name:"Oggi",marker:{color:"#3d7cff"}},
+    {x:["Casa"],y:[mc],type:"bar",name:"Da inizio mese",marker:{color:"#66aaff"}}
+  ],chartLayout("€",{barmode:"group",margin:{l:40,r:8,t:10,b:28}}),{displayModeBar:false,responsive:true});
+  $("#stat-today-kwh").textContent=tk.toFixed(2)+" kWh";
+  $("#stat-today-cost").textContent=money(tc);
+  $("#stat-month-kwh").textContent=mk.toFixed(1)+" kWh";
+  $("#stat-month-cost").textContent=money(mc);
+}
 
-    function svgBarDualChart({rows,leftKey,rightKey,leftColor,rightColor}){
-      if(!rows.length) return '<div class="empty">Nessun dato disponibile.</div>';
-      const W=760,H=265,p={l:44,r:32,t:12,b:30}; const iw=W-p.l-p.r, ih=H-p.t-p.b;
-      const leftMax = Math.max(...rows.map(r=>Number(r[leftKey]||0)), 0.1) * 1.15;
-      const rightVals = rows.map(r=>r[rightKey]).filter(v=>Number.isFinite(v));
-      const rightMax = Math.max(...(rightVals.length?rightVals:[0.1])) * 1.15;
-      const slot = iw/rows.length; const bw = Math.min(36, slot*0.36);
-      let out='';
-      for(let i=0;i<=4;i++){
-        const yy = p.t + ih*i/4;
-        const lv = leftMax*(1-i/4), rv = rightMax*(1-i/4);
-        out += `<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="var(--grid)"/>`;
-        out += `<text x="${p.l-6}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="10">${fmtNum(lv,0)}</text>`;
-        out += `<text x="${W-p.r+6}" y="${yy+4}" text-anchor="start" fill="var(--muted)" font-size="10">${fmtNum(rv,1)}</text>`;
-      }
-      rows.forEach((r,i)=>{
-        const cx = p.l + i*slot + slot/2;
-        const lhh = (Number(r[leftKey]||0)/leftMax)*ih;
-        const rhh = Number.isFinite(r[rightKey]) ? (r[rightKey]/rightMax)*ih : 0;
-        const x1 = cx - bw - 2;
-        const x2 = cx + 2;
-        out += `<rect x="${x1}" y="${p.t+ih-lhh}" width="${bw}" height="${lhh}" rx="2" fill="${leftColor}"/>`;
-        if(Number.isFinite(r[rightKey])){
-          out += `<rect x="${x2}" y="${p.t+ih-rhh}" width="${bw}" height="${rhh}" rx="2" fill="${rightColor}"/>`;
-          out += `<text x="${x2+bw/2}" y="${p.t+ih-rhh-4}" text-anchor="middle" fill="#dbe5ff" font-size="10">${fmtNum(r[rightKey],2)}</text>`;
-        }
-        out += `<text x="${x1+bw/2}" y="${p.t+ih-lhh-4}" text-anchor="middle" fill="#dbe5ff" font-size="10">${fmtNum(r[leftKey],1)} kWh</text>`;
-        out += `<text x="${cx}" y="${H-8}" text-anchor="middle" fill="var(--muted)" font-size="10">${r.label}</text>`;
-      });
-      return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${out}</svg>`;
-    }
+function renderLive(all){
+  const last=all.at(-1);if(!last)return;
+  const w=Number(last.raw["field"+FIELD_POWER]),rate=rateFor(new Date());
+  if(Number.isFinite(w)){
+    $("#stat-casa-w").innerHTML=w.toFixed(1)+' <span style="font-size:12px">W</span>';
+    $("#stat-cost-hour").textContent=money((w/1000)*rate)+"/h";
+  }
+  $("#stat-rate").textContent=rate.toFixed(4).replace(".",",")+" €/kWh";
+  $("#stat-last-ts").textContent="Ultimo dato: "+fmtDT(last.time);
+}
 
-    function svgSummaryChart({todayKwh,todayCost,monthKwh,monthCost}){
-      const rows = [
-        {label:'Oggi', kwh:todayKwh, cost:todayCost},
-        {label:'Mese', kwh:monthKwh, cost:monthCost}
-      ];
-      const W=760,H=265,p={l:44,r:32,t:12,b:30}; const iw=W-p.l-p.r, ih=H-p.t-p.b;
-      const leftMax = Math.max(...rows.map(r=>r.kwh), 0.1)*1.2;
-      const rightMax = Math.max(...rows.map(r=>Number.isFinite(r.cost)?r.cost:0), 0.1)*1.2;
-      let out='';
-      for(let i=0;i<=4;i++){
-        const yy = p.t + ih*i/4;
-        const lv = leftMax*(1-i/4), rv = rightMax*(1-i/4);
-        out += `<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="var(--grid)"/>`;
-        out += `<text x="${p.l-6}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="10">${fmtNum(lv,1)}</text>`;
-        out += `<text x="${W-p.r+6}" y="${yy+4}" text-anchor="start" fill="var(--muted)" font-size="10">${fmtNum(rv,2)}</text>`;
-      }
-      const slot = iw/rows.length, bw = 80;
-      rows.forEach((r,i)=>{
-        const cx = p.l + i*slot + slot/2;
-        const kh = (r.kwh/leftMax)*ih;
-        const ch = Number.isFinite(r.cost)?(r.cost/rightMax)*ih:0;
-        out += `<rect x="${cx-bw-6}" y="${p.t+ih-kh}" width="${bw}" height="${kh}" rx="3" fill="var(--blue)"/>`;
-        out += `<rect x="${cx+6}" y="${p.t+ih-ch}" width="${bw}" height="${ch}" rx="3" fill="var(--green)"/>`;
-        out += `<text x="${cx-bw/2-6}" y="${p.t+ih-kh-5}" text-anchor="middle" fill="#dbe5ff" font-size="10">${fmtNum(r.kwh,2)} kWh</text>`;
-        if(Number.isFinite(r.cost)) out += `<text x="${cx+bw/2+6}" y="${p.t+ih-ch-5}" text-anchor="middle" fill="#dbe5ff" font-size="10">${fmtNum(r.cost,2)} €</text>`;
-        out += `<text x="${cx}" y="${H-8}" text-anchor="middle" fill="var(--muted)" font-size="11">${r.label}</text>`;
-      });
-      return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${out}</svg>`;
-    }
+async function renderAll(){
+  try{
+    $("#status-bar").textContent="Caricamento dati da ThingSpeak…";
+    const all=await fetchFeeds(8000);
+    renderLive(all);
+    const filtered=filterRange(all,RANGE_HOURS[currentRange]||24);
+    renderPower(filtered);
+    renderEnergy(filtered);
+    renderWeekly(all);
+    renderCosts(all);
+    $("#stat-total-points").textContent=(filtered.length||0)+" punti";
+    $("#status-bar").textContent=all.length?"Ultimo dato: "+fmtDT(all.at(-1).time):"Nessun dato";
+  }catch(e){
+    $("#status-bar").textContent="Errore: "+e.message;
+    $("#status-bar").classList.add("bad");
+    console.error(e);
+  }
+}
 
-    function renderCharts(){
-      // last 7 days
-      $("#meta7d").textContent = state.last7 ? ('Tot.: ' + fmtKwh(state.last7.reduce((s,r)=>s+r.kwh,0),1)) : '—';
-      $("#chart7dWrap").innerHTML = svgBarDualChart({
-        rows: state.last7 || [],
-        leftKey: 'kwh',
-        rightKey: 'cost',
-        leftColor: 'var(--green)',
-        rightColor: 'var(--blue)'
-      });
+function tickClock(){
+  const d=new Date();
+  $("#clock-time").textContent=fmtTime(d);
+  $("#clock-date").textContent=d.toLocaleDateString("it-IT",{weekday:"long",day:"2-digit",month:"2-digit"});
+}
 
-      const now = new Date();
-      const rate = rateForMonth(monthKeyFromDate(now));
-      $("#chartSummaryWrap").innerHTML = svgSummaryChart({
-        todayKwh: state.today?.totalKwh || 0,
-        todayCost: rate===null ? null : (state.today.totalKwh*rate),
-        monthKwh: state.month?.totalKwh || 0,
-        monthCost: rate===null ? null : (state.month.totalKwh*rate)
-      });
+document.querySelectorAll(".btn-range").forEach(b=>b.onclick=()=>{
+  currentRange=b.dataset.range;
+  document.querySelectorAll(".btn-range").forEach(x=>x.classList.toggle("active",x===b));
+  renderAll();
+});
+$("#btn-refresh").onclick=renderAll;
+$("#btn-tariffe").onclick=()=>$("#tariffe-modal").classList.add("show");
+$("#close-modal").onclick=()=>$("#tariffe-modal").classList.remove("show");
+$("#save-rate").onclick=async()=>{
+  const m=$("#tar-month").value,r=Number($("#tar-rate").value.replace(",","."));
+  if(!m||!Number.isFinite(r)){alert("Inserisci mese e tariffa.");return}
+  saveLocalRate(m,r);$("#tar-rate").value="";await loadTariffs();await renderAll();
+};
+$("#tar-month").value=monthKey(new Date());
 
-      $("#metaPower24h").textContent = state.power24h?.length ? ('Casa: ' + fmtPower(state.power24h[state.power24h.length-1].powerW)) : '—';
-      $("#chartPowerWrap").innerHTML = svgLineChart({
-        points:(state.power24h||[]).map(p=>({x:new Date(p.t), y:p.powerW})),
-        color:'var(--blue)', yLabel:'W', xTicks:6, showDots:false, titleMode:'time'
-      });
-
-      $("#metaIntervals").textContent = state.interval24h?.length ? ('Casa: ' + fmtWh(state.interval24h[state.interval24h.length-1].wh,0)) : '—';
-      $("#chartIntervalsWrap").innerHTML = svgLineChart({
-        points:(state.interval24h||[]).map(p=>({x:new Date(p.time), y:p.wh})),
-        color:'var(--green)', yLabel:'Wh', xTicks:6, showDots:false, titleMode:'time'
-      });
-
-      $("#footLastPoint").textContent = state.live ? ('Ultimo dato: ' + tsDateTimeLocal(state.live.createdAt)) : 'Ultimo dato: —';
-      if(state.interval24h?.length){
-        const first = state.interval24h[0].time;
-        const last = state.interval24h[state.interval24h.length-1].time;
-        $("#footIntervalRange").textContent = 'Casa: ' + fmtWh(state.interval24h.reduce((s,r)=>s+r.wh,0),0) + ' • ' +
-          new Date(first).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) + ' - ' +
-          new Date(last).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
-      }else{
-        $("#footIntervalRange").textContent = 'Intervallo: —';
-      }
-    }
-
-    function renderTariffs(){
-      const entries = Object.keys(state.tariffs).sort((a,b)=>b.localeCompare(a));
-      $("#tariffList").innerHTML = entries.length ? entries.map(month=>{
-        const local = Object.prototype.hasOwnProperty.call(state.localTariffs, month);
-        return `<div class="tariffrow">
-          <div><b>${month}</b><div class="helper">${local?'Questo dispositivo':'tariffe.json'}</div></div>
-          <div>${fmtNum(Number(state.tariffs[month]),4)} €/kWh</div>
-          <button class="btn" data-del="${month}" ${local?'':'disabled'}>Elimina</button>
-        </div>`;
-      }).join('') : '<div class="empty" style="height:120px">Nessuna tariffa impostata.</div>';
-      document.querySelectorAll('[data-del]').forEach(btn=>{
-        if(btn.disabled) return;
-        btn.onclick = async ()=>{
-          delete state.localTariffs[btn.dataset.del];
-          saveLocalTariffs();
-          await loadTariffs();
-          await refreshAll();
-        };
-      });
-    }
-
-    async function refreshAll(){
-      setStatus('Aggiornamento…');
-      try{
-        await loadTariffs();
-        await loadLive();
-        await loadTodayAndPower24h();
-        await loadMonthAndYear();
-        await loadLast7Days();
-        renderCards();
-        renderCharts();
-        setStatus(state.live ? ('Online • ultimo dato ' + tsDateTimeLocal(state.live.createdAt)) : 'Online');
-      }catch(err){
-        console.error(err);
-        setStatus(err.message || String(err), true);
-      }
-    }
-
-    $("#refreshBtn").onclick = refreshAll;
-    $("#tariffeBtn").onclick = ()=>$("#tariffeModal").classList.add('show');
-    $("#closeTariffe").onclick = ()=>$("#tariffeModal").classList.remove('show');
-    $("#saveRate").onclick = async ()=>{
-      const month = $("#newMonth").value;
-      const rate = Number(($("#newRate").value || '').replace(',','.'));
-      if(!month || !Number.isFinite(rate)){ alert('Inserisci mese e tariffa.'); return; }
-      state.localTariffs[month] = rate;
-      saveLocalTariffs();
-      $("#newRate").value = '';
-      await loadTariffs();
-      await refreshAll();
-    };
-    $("#newMonth").value = monthKeyFromDate(new Date());
-
-    tickClock();
-    setInterval(tickClock, 1000);
-    refreshAll();
-    setInterval(()=>loadLive().then(()=>{renderCards(); setStatus('Online • ultimo dato ' + tsDateTimeLocal(state.live.createdAt));}).catch(()=>{}), 60000);
-  </script>
+(async()=>{
+  await loadTariffs();
+  tickClock();setInterval(tickClock,1000);
+  await renderAll();
+  setInterval(renderAll,60000);
+  if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script>
 </body>
 </html>
